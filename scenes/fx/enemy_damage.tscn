@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://scripts/fx/fx_enemy_damage.gd" type="Script" id=1]
+
+[node name="enemy_damage" type="Spatial"]
+script = ExtResource( 1 )
