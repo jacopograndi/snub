@@ -88,10 +88,10 @@ noise = SubResource( 5 )
 [resource]
 resource_local_to_scene = true
 shader = SubResource( 1 )
-shader_param/offset = 0.147
+shader_param/offset = 0.369
 shader_param/up = true
 shader_param/borderColor = Color( 1, 1, 1, 0 )
-shader_param/borderHeight = 0.0
+shader_param/borderHeight = 0.255
 shader_param/waveAmplitude = 1.0
 shader_param/waveFrequency = 1.0
 shader_param/wavePhase = 0.1

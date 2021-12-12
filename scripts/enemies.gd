@@ -2,7 +2,7 @@ extends Node
 
 var _path
 var _enemy_blue
-var _dissolve_mat
+var _dissolve_mat : ShaderMaterial
 
 var _fx_holder
 var _fx_enemy_damage
@@ -114,4 +114,4 @@ func fx_damage(name):
 	var instance_model = _shapes[enemy["ops"]].instance()
 	instance.add_child(instance_model)
 	
-	instance.refresh_shader(_dissolve_mat)
+	instance.refresh_shader(_dissolve_mat.duplicate())

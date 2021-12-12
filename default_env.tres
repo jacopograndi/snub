@@ -5,3 +5,11 @@
 [resource]
 background_mode = 2
 background_sky = SubResource( 1 )
+ambient_light_color = Color( 1, 1, 1, 1 )
+ambient_light_energy = 1.83
+auto_exposure_enabled = true
+auto_exposure_speed = 2.35
+ss_reflections_enabled = true
+ssao_enabled = true
+ssao_bias = 0.102
+ssao_quality = 2

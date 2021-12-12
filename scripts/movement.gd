@@ -1,18 +1,22 @@
 extends KinematicBody
 
 var vel = Vector3()
-var rot = Quat()
-var rotx = Quat()
-var roty = Quat()
 
+var _mouse = Vector2()
 var sensitivity_mouse = 0.1
 
-var ray
+var _camera : Camera
 
 var _normal = Vector3.ZERO
 var _colliding = false
 var _colliding_group = []
 var _colliding_node
+var _collision_point
+
+var _pivot
+var _pivot_dist
+var _pivot_rot
+var _pivot_look
 
 var _world
 
@@ -33,13 +37,8 @@ var sel_map = [
 	"turrets", "path start", "path", "path end", "attach point"
 ]
 
-func _ready():
-	ray = find_node("RayCast")
-	
-	ray.enabled = true
-	ray.collide_with_areas = false
-	
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+func _ready():	
+	_camera = $Camera
 	
 	_world = self.get_parent().find_node("world")
 	_turret_holder = self.get_parent().find_node("turrets")
@@ -137,6 +136,7 @@ func _save():
 	save_game.open("user://map0.json", File.WRITE)
 	save_game.store_string(to_json(get_map_state()))
 	save_game.close()
+	print("saved")
 
 func _load():
 	var save_game = File.new()
@@ -144,9 +144,9 @@ func _load():
 	var raw = save_game.get_as_text()
 	save_game.close()
 	
-	print(raw)
 	var state = parse_json(raw)
 	set_map_state(state)
+	print("loaded")
 
 func _process(delta):
 	if Input.is_action_just_released("save"):
@@ -159,9 +159,53 @@ func clear_children (node):
 		node.remove_child(n)
 		n.queue_free()
 
+func look_free (delta, m):
+	self.transform.basis = self.transform.basis.rotated(Vector3.UP, m.x)
+	var rrrot = self.transform.basis.get_rotation_quat()
+	self.transform.basis = self.transform.basis.rotated(rrrot*Vector3.RIGHT, m.y)
+	
+func look_orbit(delta, m):
+	var diff : Vector3 = self.transform.origin - _pivot
+	var orbit : Basis = Transform.looking_at(diff, Vector3.UP).basis
+	orbit = orbit.rotated(Vector3.UP, m.x)
+	orbit = orbit.rotated(orbit.get_rotation_quat()*Vector3.RIGHT, -m.y)
+	self.transform.basis = self.transform.basis.rotated(Vector3.UP, m.x)
+	var rrrot = self.transform.basis.get_rotation_quat()
+	self.transform.basis = self.transform.basis.rotated(rrrot*Vector3.RIGHT, m.y)
+	
+	var normdiff = diff.normalized()
+	self.transform.origin = _pivot - orbit.z * _pivot_dist
+
 func _move_input(delta):
 	var dir = Vector3()
+		
+	var m = _mouse
+	_mouse = Vector2()
 	
+	var orbiting = false
+
+	if Input.is_action_just_pressed("orbit"):
+		if _colliding:
+			_pivot = _collision_point
+			var diff : Vector3 = self.transform.origin - _pivot
+			_pivot_rot = Transform.looking_at(diff, Vector3.UP).basis.get_rotation_quat()
+			_pivot_dist = diff.length()
+			_pivot_look = Transform(Basis(), _collision_point)
+		else: _pivot = null
+		
+	if Input.is_action_pressed("orbit"):
+		if _pivot != null:
+			orbiting = true
+			look_orbit(delta, m)
+		else:
+			look_free(delta, m)
+		
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		
+	if Input.is_action_pressed("look"):
+		look_free(delta, m)
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
 	var input_movement_vector = Vector3()
 	if Input.is_action_pressed("movement_forward"):
 		input_movement_vector.z -= 1
@@ -177,13 +221,7 @@ func _move_input(delta):
 		input_movement_vector.y -= 1
 	input_movement_vector = input_movement_vector.normalized()
 	
-	if Input.is_action_just_pressed("ui_cancel"):
-		if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE:
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-		else:
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	
-	dir = rot * input_movement_vector
+	dir = self.transform.basis.get_rotation_quat() * input_movement_vector
 	
 	vel += dir * delta;
 	vel *= 0.8
@@ -201,11 +239,6 @@ func _physics_process(delta):
 		if sel < 0:
 			sel = 0
 			
-	if "path" in sel_map[sel]:
-		ray.collision_mask = 3
-	else: 
-		ray.collision_mask = 1
-	
 	_move_input(delta)
 	_pointer()
 	
@@ -249,137 +282,115 @@ func check_overlap_pointer():
 			
 	return overlap
 	
-func place_turret ():
+func _inst_turret (pos, rot):
+	var instance = _turret.instance()
+	_turret_holder.add_child(instance)
+	instance.transform.origin = pos;
+	instance.transform.basis = Basis(rot);
+	instance.refresh_normal()
+	var instance_model = _turret_blues[0].instance()
+	instance_model.name = "model"
+	instance.add_child(instance_model)
+	instance.refresh_model()
+	
+func _inst_path_start (pos, rot):
+	var instance = _path_start.instance()
+	_path_holder.add_child(instance)
+	instance.transform.origin = pos + _normal * 0.25;
+	instance.transform.basis = Basis(rot);
+	
+func _inst_path (pos, rot):
+	var instance = _path.instance()
+	_path_holder.add_child(instance)
+	instance.transform.origin = pos + _normal * 0.25;
+	instance.transform.basis = Basis(rot);
+	instance.set_name("path")
+	_colliding_node.transform.basis = Basis(rot);
+	
+func _inst_path_end (pos, rot):
+	var instance = _path_end.instance()
+	_path_holder.add_child(instance)
+	instance.transform.origin = pos + _normal * 0.25
+	instance.transform.basis = Basis(rot);
+	
+func _inst_attach (pos, rot):
+	var instance = _attach_point.instance()
+	_attach_point_holder.add_child(instance)
+	instance.transform.origin = pos;
+	instance.transform.basis = Basis(rot);
+	
+func place (group, inst : FuncRef):
 	var ptr = self.get_parent().find_node("pointer");
 	if Input.is_action_just_pressed("use"):
-		if _colliding && "attach" in _colliding_group:
+		if _colliding && group in _colliding_group:
 			if !check_overlap_pointer():
-				var instance = _turret.instance()
-				_turret_holder.add_child(instance)
-				instance.transform.origin = ptr.transform.origin;
-				instance.transform.basis = Basis(ptr.transform.basis.get_rotation_quat());
-				instance.refresh_normal()
-				var instance_model = _turret_blues[0].instance()
-				instance_model.name = "model"
-				instance.add_child(instance_model)
-				instance.refresh_model()
+				inst.call_func(ptr.transform.origin, ptr.transform.basis.get_rotation_quat())
 				
+func delete (group):
 	if Input.is_action_just_pressed("cancel"):
-		if _colliding && "turrets" in _colliding_group:
-			_colliding_node.queue_free()
-			
-func place_start_path ():
-	var ptr = self.get_parent().find_node("pointer");
-	if Input.is_action_just_pressed("use"):
-		if _colliding && "voxels" in _colliding_group:
-			if !check_overlap_pointer():
-				var instance = _path_start.instance()
-				_path_holder.add_child(instance)
-				instance.transform.origin = ptr.transform.origin + _normal * 0.25;
-				instance.transform.basis = Basis(ptr.transform.basis.get_rotation_quat());
-				
-	if Input.is_action_just_pressed("cancel"):
-		if _colliding && "path" in _colliding_group:
-			_colliding_node.queue_free()
-			
-func place_path ():
-	var ptr = self.get_parent().find_node("pointer");
-	if Input.is_action_just_pressed("use"):
-		if _colliding && "path" in _colliding_group:
-			if !check_overlap_pointer():
-				var instance = _path.instance()
-				_path_holder.add_child(instance)
-				instance.transform.origin = ptr.transform.origin + _normal * 0.25;
-				instance.transform.basis = Basis(ptr.transform.basis.get_rotation_quat());
-				instance.set_name("path")
-				
-				_colliding_node.transform.basis = Basis(ptr.transform.basis.get_rotation_quat());
-				
-	if Input.is_action_just_pressed("cancel"):
-		if _colliding && "path" in _colliding_group:
-			_colliding_node.queue_free()
-			
-func place_path_end ():
-	var ptr = self.get_parent().find_node("pointer");
-	if Input.is_action_just_pressed("use"):
-		if _colliding && "path" in _colliding_group:
-			if !check_overlap_pointer():
-				var instance = _path_end.instance()
-				_path_holder.add_child(instance)
-				instance.transform.origin = ptr.transform.origin + _normal * 0.25
-				instance.transform.basis = Basis(ptr.transform.basis.get_rotation_quat());
-		
-	if Input.is_action_just_pressed("cancel"):
-		if _colliding && "path" in _colliding_group:
-			_colliding_node.queue_free()
-				
-func place_attach ():
-	var ptr = self.get_parent().find_node("pointer");
-	if Input.is_action_just_pressed("use"):
-		if _colliding && "voxels" in _colliding_group:
-			if !check_overlap_pointer():
-				var instance = _attach_point.instance()
-				_attach_point_holder.add_child(instance)
-				instance.transform.origin = ptr.transform.origin;
-				instance.transform.basis = Basis(ptr.transform.basis.get_rotation_quat());
-		
-	if Input.is_action_just_pressed("cancel"):
-		if _colliding && "attach" in _colliding_group:
+		if _colliding && group in _colliding_group:
 			_colliding_node.queue_free()
 	
 func _pointer ():
 	var ptr = self.get_parent().find_node("pointer");
 	
-	match sel:
-		0:
-			place_turret()
-		1:
-			place_start_path()
-		2:
-			place_path()
-		3:
-			place_path_end()
-		4:
-			place_attach()
-	
-	var from = self.transform.origin
-	var to = from + (rot * Vector3.FORWARD) * 5
+	var space: PhysicsDirectSpaceState = get_world().direct_space_state as PhysicsDirectSpaceState
+	var mouse2d = get_viewport().get_mouse_position()
+	var from = _camera.project_ray_origin(mouse2d)
+	var to = (from + _camera.project_ray_normal(mouse2d) * 5)
 	
 	ptr.transform.origin = to
 	
-	if ray.is_colliding():
-		_colliding = true
-		_normal = ray.get_collision_normal().normalized();
-		var pos = ray.get_collision_point()
+	var mask = 1
+	if sel in [1, 2, 3]: mask = 3 
+	var result = space.intersect_ray(from, to, [], mask)
+	if result.size() > 0:
+		ptr.get_child(0).visible = true
 		
-		var node = ray.get_collider().get_parent()
+		_colliding = true
+		_normal = result.normal;
+		_collision_point = result.position
+		
+		var node = result.collider.get_parent()
 		_colliding_node = node
 		_colliding_group = node.get_groups()
 		
 		if ("voxels" in _colliding_group or "path" in _colliding_group):
-			var _cursor_position = ray.get_collision_point() - _normal * (0.5 / 2)
-			var tran = 0.5 *_cursor_position
-			tran += Vector3.ONE * (0.5 / 2) + _normal* (0.5 / 2)
-			pos = tran
+			var cpos = result.position - _normal * (0.5 / 2)
+			var _cursor_position = (cpos / 0.5).floor() * 0.5
+			_cursor_position += Vector3.ONE * (0.5 / 2) + _normal * (0.5 / 2)
+			_collision_point = _cursor_position
 		
 		if ("attach" in _colliding_group):
-			pos = node.global_transform.origin;
+			_collision_point = node.global_transform.origin;
 			_normal = (node.global_transform.basis.get_rotation_quat() * Vector3.UP).normalized();
 		
 		ptr.transform.basis = Basis(Utils.quat_look(_normal, Vector3.UP))
-		ptr.transform.origin = pos
+		ptr.transform.origin = _collision_point
 	else:
 		_colliding = false
 		_colliding_group = []
+		ptr.get_child(0).visible = false
+	
+	match sel:
+		0:
+			place("attach", funcref(self, "_inst_turret"))
+			delete("turret")
+		1:
+			place("voxels", funcref(self, "_inst_path_start"))
+			delete("path")
+		2:
+			place("path", funcref(self, "_inst_path"))
+			delete("path")
+		3:
+			place("path", funcref(self, "_inst_path_end"))
+			delete("path")
+		4:
+			place("voxels", funcref(self, "_inst_attach"))
+			delete("attach")
 
 func _input(event):
 	if event is InputEventMouseMotion:
-		var mouse = Vector2(
+		_mouse += Vector2(
 			deg2rad(event.relative.x) * -1, 
-			deg2rad(event.relative.y) * -1)
-		mouse *= sensitivity_mouse
-		rotx *= Quat(Vector3(0, mouse.x, 0))
-		roty *= Quat(Vector3(mouse.y, 0, 0))
-		
-		rot = (rotx * roty).normalized()
-		self.transform.basis = Basis(rot)
+			deg2rad(event.relative.y) * -1) * sensitivity_mouse
