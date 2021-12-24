@@ -1,0 +1,113 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://scripts/gui_turret.gd" type="Script" id=1]
+[ext_resource path="res://themes/snub_theme.tres" type="Theme" id=2]
+
+[sub_resource type="Environment" id=2]
+background_mode = 1
+background_color = Color( 0.0392157, 0.0392157, 0.0392157, 1 )
+ambient_light_color = Color( 0.168627, 0.168627, 0.168627, 1 )
+ambient_light_energy = 2.27
+
+[sub_resource type="World" id=1]
+resource_local_to_scene = true
+environment = SubResource( 2 )
+
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 0.6, 0.6, 0.6, 0 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+shadow_offset = Vector2( 1, 1 )
+
+[node name="gui_turret" type="TextureButton"]
+margin_right = 100.0
+margin_bottom = 120.0
+rect_min_size = Vector2( 100, 120 )
+rect_pivot_offset = Vector2( 50, 50 )
+size_flags_horizontal = 9
+theme = ExtResource( 2 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_right = 100.0
+margin_bottom = 100.0
+mouse_filter = 2
+color = Color( 0, 0, 0, 0.227451 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="panel" type="Panel" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -20.0
+theme = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="cash_label" type="Label" parent="."]
+anchor_right = 1.0
+margin_right = -2.0
+text = "100T"
+align = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="hbox" type="HBoxContainer" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -20.0
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="name_label" type="Label" parent="hbox"]
+margin_left = 36.0
+margin_top = 1.0
+margin_right = 64.0
+margin_bottom = 19.0
+text = "name"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="viewport" type="Viewport" parent="."]
+size = Vector2( 100, 100 )
+own_world = true
+world = SubResource( 1 )
+msaa = 2
+hdr = false
+usage = 3
+render_target_v_flip = true
+
+[node name="Camera" type="Camera" parent="viewport"]
+transform = Transform( 1, 0, 0, 0, 0.892554, 0.45094, 0, -0.45094, 0.892554, 0, 0.765, 1.104 )
+fov = 29.3
+far = 7.5
+
+[node name="spinner" type="Spatial" parent="viewport"]
+transform = Transform( 0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 0, 0, 0 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="viewport"]
+transform = Transform( 0.642788, -0.586824, 0.492404, 0, 0.642788, 0.766044, -0.766044, -0.492404, 0.413176, 0, 0, 0 )
+
+[node name="border" type="Panel" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+custom_styles/panel = SubResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
