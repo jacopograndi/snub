@@ -68,13 +68,19 @@ _global_script_class_icons={
 
 [application]
 
-config/name="snub2"
+config/name="snub"
 run/main_scene="res://world.tscn"
 config/icon="res://icon.png"
 
 [editor_plugins]
 
 enabled=PoolStringArray( "res://addons/voxel-core/plugin.cfg" )
+
+[gui]
+
+theme/use_hidpi=true
+theme/custom="res://themes/DarkTheme/Dark.theme"
+theme/custom_font="res://themes/font.tres"
 
 [input]
 
@@ -164,4 +170,7 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
+quality/subsurface_scattering/quality=2
+quality/filters/msaa=4
+quality/filters/use_fxaa=true
 environment/default_environment="res://default_env.tres"

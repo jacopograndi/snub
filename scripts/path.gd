@@ -8,9 +8,6 @@ const dirs = [
 
 var nodes = []
 
-
-func _ready():
-	pass # Replace with function body.
 	
 func next_node (node, dir):
 	var pos : Vector3 = node.transform.origin
@@ -59,13 +56,13 @@ func load_nodes ():
 
 func hide ():
 	for child in get_children():
-		var mesh = child.find_node("MeshInstance")
+		var mesh = child.get_node("MeshInstance")
 		mesh.visible = false
 		
 func show ():
 	for child in get_children():
-		var mesh = child.find_node("MeshInstance")
-		mesh.visible = false
+		var mesh = child.get_node("MeshInstance")
+		mesh.visible = true
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):

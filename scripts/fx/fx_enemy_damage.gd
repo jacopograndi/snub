@@ -1,7 +1,7 @@
 extends Spatial
 
 var timer = 0
-var timer_life = 0.5
+var timer_life = 1
 
 var anim_size = 1
 
@@ -9,9 +9,10 @@ var _mesh : MeshInstance
 
 var base
 
-func refresh_shader(mat):
+func refresh_shader(mat, color : Color):
 	_mesh = get_child(0).get_child(0)
 	_mesh.set_surface_material(0, mat)
+	_mesh.get_active_material(0).set_shader_param("albedo", color)
 	
 func refresh_basis():
 	base = transform.basis

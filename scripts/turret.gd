@@ -1,28 +1,30 @@
 extends Spatial
 
-var _path
-var _enemies
-var _projectiles_holder
+var _path : Node
+var _enemies : Node
+var _projectiles_holder : Node
+var _enemies_holder : Node
 
-var _base
-var _gun
-var _shooting_point
-var _normal
+var _base : Spatial
+var _gun : Spatial
+var _shooting_point : Vector3
+var _normal : Vector3
 
 var aim_mode = "first"
 var _target = null
 
-var _range = 10
+var projectile : PackedScene
 
-var projectile
+var info : Dictionary
 
-var cooldown = 0.1
 var cooldown_timer = 0
 
 func _ready():
-	_path = get_tree().root.get_child(0).find_node("path")
-	_enemies = get_tree().root.get_child(0).find_node("enemies")
-	_projectiles_holder = get_tree().root.get_child(0).find_node("projectiles")
+	var root = get_tree().root.get_child(0)
+	_path = root.get_node("path")
+	_enemies = root.get_node("enemies")
+	_projectiles_holder = root.get_node("projectiles")
+	_enemies_holder = root.find_node("enemies")
 	
 	projectile = load("res://scenes/projectiles/bullet.tscn")
 	
@@ -34,17 +36,20 @@ func refresh_model():
 	_base = get_node("model").find_node("pivot*").find_node("base*")
 	_gun = _base.find_node("gun*")
 	
+func refresh_info(tinfo):
+	self.info = tinfo
+	
 func filter_in_range(set):
 	var filtered = []
 	for target in set:
 		var node = _enemies.node_from_id(target)
 		var dist = (node.transform.origin - _shooting_point).length_squared()
-		if dist < _range*_range:
+		if dist < info.range*info.range:
 			filtered += [target]
 	return filtered
 	
 func filter_visible(set):
-	var space: PhysicsDirectSpaceState = get_world().direct_space_state as PhysicsDirectSpaceState
+	var space: PhysicsDirectSpaceState = get_world().direct_space_state
 	var from = _shooting_point
 	
 	var filtered = []
@@ -86,28 +91,76 @@ func _physics_process(delta):
 		var direction = (enemy.transform.origin - _shooting_point).normalized()
 		
 		var proj_normal = direction - _normal.dot(direction) * _normal
-		var base_rot = Transform().looking_at(proj_normal, _normal).basis.get_rotation_quat()
+		var base_rot : Quat = Transform().looking_at(proj_normal, _normal).basis.get_rotation_quat()
 			
-		var perp = proj_normal.cross(_normal).normalized()
+		var perp = -proj_normal.cross(_normal).normalized()
 		var proj_forward = direction - perp.dot(direction) * perp
-		var gun_rot = Transform().looking_at(proj_forward, perp).basis.get_rotation_quat()
+		var gun_rot : Quat = Transform().looking_at(proj_forward, perp).basis.get_rotation_quat()
 			
 		gun_rot = Quat(direction, PI/2) * gun_rot
+		gun_rot = gun_rot.normalized()
+		gun_rot = base_rot.inverse() * gun_rot
 		
-		_base.global_transform.basis = Basis(base_rot)
-		_gun.global_transform.basis = Basis(gun_rot)
+		var base_basis = _base.global_transform.basis.get_rotation_quat()
+		var base_angle = base_basis.angle_to(base_rot)
+		if base_angle > 0.01:
+			var base_amt = (info.turn_speed * delta) / base_angle
+			base_amt = min(1, base_amt)
+			_base.global_transform.basis = Basis(base_basis.slerp(Basis(base_rot), base_amt))
+			
+		var gun_basis = _gun.transform.basis.get_rotation_quat()
+		var gun_angle = gun_basis.angle_to(gun_rot)
+		if gun_angle > 0.01:
+			var gun_amt = (info.turn_speed * delta) / gun_angle
+			gun_amt = min(1, gun_amt)
+			_gun.transform.basis = Basis(gun_basis.slerp(Basis(gun_rot), gun_amt))
 		
 		cooldown_timer += delta
-		if cooldown_timer > cooldown:
-			cooldown_timer -= cooldown
-			shoot(direction)
+		if cooldown_timer > info.cooldown:
+			cooldown_timer -= info.cooldown
+			shoot()
+			
+func spread (amt : int) -> Array:
+	var dirs = []
+	var width : int = ceil(sqrt(amt))
+	for i in amt:
+		var dir = _gun.global_transform.basis
+		var x = floor(i%width)-width/2+(width+1)%2*0.5
+		var y = floor(i/width)-floor(sqrt(amt)-1)/2
+		var spread = info.projectile.spread
+		dir = dir.rotated(_normal, deg2rad(x*spread))
+		dir = dir.rotated(_normal.cross(dir.z).normalized(), deg2rad(y*spread))
+		dirs.append(dir)
+	return dirs
 
-func shoot (dir):
-	shoot_projectile(dir)
+func shoot ():
+	if info.projectile.amount > 1:
+		for dir in spread(info.projectile.amount):
+			match info.projectile.type:
+				"bullet": shoot_bullet(dir)
+				"ray": shoot_ray(dir)
+	else:
+		match info.projectile.type:
+			"bullet": shoot_bullet(_gun.global_transform.basis)
+			"ray": shoot_ray(_gun.global_transform.basis)
 
-func shoot_projectile (dir):
+func shoot_bullet (dir : Basis):
 	var instance = projectile.instance()
 	_projectiles_holder.add_child(instance)
-	instance.transform = Transform().looking_at(dir, _normal)
-	instance.transform.origin = _shooting_point + dir*0.3;
+	instance.transform.basis = dir
+	instance.transform.origin = _shooting_point - dir.z*0.3;
 	instance.shooter = self
+	instance.damage = info.damage
+	instance.speed = info.projectile.speed
+
+func shoot_ray (dir : Basis):
+	var space: PhysicsDirectSpaceState = get_world().direct_space_state
+	var from = _shooting_point
+	var to = _shooting_point - dir.z*info.range;
+	
+	var result = space.intersect_ray(from, to, _path.nodes, 1)
+	if result.size() > 0:
+		var parent = result.collider.get_parent()
+		var groups = parent.get_groups()
+		if "enemies" in groups:
+			_enemies_holder.damage(parent.name, info.damage)

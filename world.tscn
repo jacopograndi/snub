@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=20 format=2]
 
 [ext_resource path="res://scripts/movement.gd" type="Script" id=1]
 [ext_resource path="res://scripts/enemies.gd" type="Script" id=2]
@@ -7,6 +7,12 @@
 [ext_resource path="res://models/pointer.obj" type="ArrayMesh" id=5]
 [ext_resource path="res://scenes/gui.tscn" type="PackedScene" id=6]
 [ext_resource path="res://scripts/path.gd" type="Script" id=7]
+[ext_resource path="res://scripts/load_map.gd" type="Script" id=8]
+[ext_resource path="res://scripts/load_turrets.gd" type="Script" id=9]
+[ext_resource path="res://scripts/load_scenes.gd" type="Script" id=10]
+[ext_resource path="res://scripts/saveload.gd" type="Script" id=11]
+[ext_resource path="res://scripts/resources.gd" type="Script" id=12]
+[ext_resource path="res://scripts/placer.gd" type="Script" id=13]
 
 [sub_resource type="SphereShape" id=1]
 
@@ -49,8 +55,25 @@ data = PoolVector3Array( 0, 0.5, 0.5, 0, 0.5, 0, 0.5, 0.5, 0.5, 0, 0.5, 0, 0.5, 
 
 [node name="sun" type="DirectionalLight" parent="."]
 transform = Transform( 0.782977, -0.605334, 0.14324, 0, 0.230271, 0.973127, -0.62205, -0.761936, 0.180297, 0, 0, 0 )
+light_color = Color( 1, 0.984314, 0.94902, 1 )
 light_energy = 2.533
+light_bake_mode = 0
 shadow_enabled = true
+directional_shadow_blend_splits = true
+directional_shadow_normal_bias = 0.209
+directional_shadow_max_distance = 10.0
+
+[node name="saveload" type="Node" parent="."]
+script = ExtResource( 11 )
+
+[node name="load_turrets" type="Node" parent="saveload"]
+script = ExtResource( 9 )
+
+[node name="load_scenes" type="Node" parent="saveload"]
+script = ExtResource( 10 )
+
+[node name="saveload_map" type="Node" parent="saveload"]
+script = ExtResource( 8 )
 
 [node name="player" type="KinematicBody" parent="."]
 script = ExtResource( 1 )
@@ -59,14 +82,22 @@ script = ExtResource( 1 )
 shape = SubResource( 1 )
 disabled = true
 
-[node name="Camera" type="Camera" parent="player"]
+[node name="camera" type="Camera" parent="player"]
 current = true
 fov = 90.9
-far = 4482.9
+near = 0.01
+far = 2000.0
+
+[node name="resources" type="Node" parent="player"]
+script = ExtResource( 12 )
+
+[node name="placer" type="Spatial" parent="player"]
+script = ExtResource( 13 )
 
 [node name="pointer" type="Spatial" parent="."]
 
-[node name="MeshInstance" type="MeshInstance" parent="pointer"]
+[node name="base" type="MeshInstance" parent="pointer"]
+visible = false
 mesh = ExtResource( 5 )
 material/0 = null
 

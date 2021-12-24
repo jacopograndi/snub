@@ -1,8 +1,11 @@
 extends Node
 
+var _resources : Node
+
 var _path
 var _enemy_blue
 var _dissolve_mat : ShaderMaterial
+var _enemy_mat : Material
 
 var _fx_holder
 var _fx_enemy_damage
@@ -12,11 +15,27 @@ var _shapes = {}
 var serial_enemy = 0
 var enemies = {}
 
+var colors = [
+	Color.red,
+	Color.purple,
+	Color.blue,
+	Color.mediumseagreen,
+	Color.green,
+	Color.greenyellow,
+	Color.yellow,
+	Color.orange,
+	Color.violet,
+	Color.indigo,
+]
+
 
 func _ready():
-	_fx_holder = get_tree().root.get_child(0).find_node("fx")
-	_path = get_tree().root.get_child(0).find_node("path")
+	var root = get_tree().root.get_child(0)
+	_fx_holder = root.get_node("fx")
+	_path = root.get_node("path")
+	_resources = root.get_node("player").get_node("resources")
 	_dissolve_mat = load("res://shaders/dissolve_mat.tres")
+	_enemy_mat = load("res://models/shapes/Enemy.material")
 	_enemy_blue = load("res://scenes/enemy.tscn")
 	_fx_enemy_damage = load("res://scenes/fx/enemy_damage.tscn")
 	
@@ -42,10 +61,13 @@ func spawn():
 	instance.name = str(serial_enemy)
 	var instance_model = _shapes[_shapes.keys()[randi() % _shapes.size()]].instance()
 	instance.add_child(instance_model)
+	instance_model.get_child(0).set_surface_material(0, _enemy_mat.duplicate())
+	
 	var axis : Vector3 = Quat(Vector3(0, randf()*TAU, 0)) * Vector3.RIGHT 
 	enemies[serial_enemy] = { 
 		"cur": 0, "hp": 10, "rel": 0, "ops": instance_model.name,
-		"axis": [axis.x, axis.y, axis.z] }
+		"axis": [axis.x, axis.y, axis.z] 
+	}
 	serial_enemy += 1
 	
 func node_from_id (id):
@@ -87,18 +109,23 @@ func _physics_process(delta):
 		
 		var axis = Vector3(enemy.axis[0], enemy.axis[1], enemy.axis[2])
 		child.transform.basis = child.transform.basis.rotated(axis, delta)
+		
+		var mesh : MeshInstance = child.get_node(enemy.ops).get_child(0)
+		mesh.get_active_material(0).albedo_color = colors[enemy.hp-1]
 	
 	for id in delist:
 		get_node(str(id)).queue_free()
 		enemies.erase(id)
 
 
-func damage(name):
+func damage(name, amt):
 	var id = int(name)
 	var enemy = enemies[id]
-	enemies[id].hp -= 1
 	
-	fx_damage(name)
+	if enemy.hp > 0:
+		enemy.hp -= amt
+		_resources.add({ enemy.ops[0]: amt })
+		fx_damage(name)
 	
 func fx_damage(name):
 	var id = int(name)
@@ -114,4 +141,4 @@ func fx_damage(name):
 	var instance_model = _shapes[enemy["ops"]].instance()
 	instance.add_child(instance_model)
 	
-	instance.refresh_shader(_dissolve_mat.duplicate())
+	instance.refresh_shader(_dissolve_mat.duplicate(), colors[enemy.hp-1])
