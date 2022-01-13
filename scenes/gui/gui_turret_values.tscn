@@ -1,0 +1,101 @@
+[gd_scene format=2]
+
+[node name="hbox_values" type="VBoxContainer"]
+margin_left = 153.0
+margin_right = 183.0
+margin_bottom = 225.0
+rect_min_size = Vector2( 30, 0 )
+custom_constants/separation = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="damage" type="Label" parent="."]
+margin_top = -1.0
+margin_right = 30.0
+margin_bottom = 23.4
+text = "0"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="range" type="Label" parent="."]
+margin_top = 23.0
+margin_right = 30.0
+margin_bottom = 47.4
+text = "0"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="turn speed" type="Label" parent="."]
+margin_top = 47.0
+margin_right = 30.0
+margin_bottom = 71.4
+text = "0"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="cooldown" type="Label" parent="."]
+margin_top = 71.0
+margin_right = 30.0
+margin_bottom = 95.4
+text = "0"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="projectile" type="Label" parent="."]
+margin_top = 95.0
+margin_right = 30.0
+margin_bottom = 119.4
+text = "0"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="spread" type="Label" parent="."]
+margin_top = 119.0
+margin_right = 30.0
+margin_bottom = 143.4
+text = "0"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="projectile speed" type="Label" parent="."]
+margin_top = 143.0
+margin_right = 30.0
+margin_bottom = 167.4
+text = "0"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="projectiles per shot" type="Label" parent="."]
+margin_top = 167.0
+margin_right = 30.0
+margin_bottom = 191.4
+text = "0"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="modules" type="Label" parent="."]
+margin_top = 191.0
+margin_right = 30.0
+margin_bottom = 215.4
+text = "0"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}

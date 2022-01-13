@@ -25,7 +25,7 @@ func get_base_turrets():
 		var flag = true
 		for oth in info.values():
 			if oth.name == turr.name: continue
-			if turr.name in oth.upgrades:
+			if turr.name in oth.get("upgrades", {}):
 				flag = false
 		if flag: results.append(turr)
 	return results

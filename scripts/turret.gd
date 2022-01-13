@@ -5,8 +5,9 @@ var _enemies : Node
 var _projectiles_holder : Node
 var _enemies_holder : Node
 
-var _base : Spatial
-var _gun : Spatial
+var pivot : Spatial
+var base : Spatial
+var gun : Spatial
 var _shooting_point : Vector3
 var _normal : Vector3
 
@@ -33,9 +34,11 @@ func refresh_normal ():
 	_shooting_point = transform.origin + 0.25 * _normal
 	
 func refresh_model():
-	_base = get_node("model").find_node("pivot*").find_node("base*")
-	_gun = _base.find_node("gun*")
-	
+	pivot = get_node("model").find_node("pivot*", true, true)
+	base = pivot.find_node("base*", true, true)
+	if base != null:
+		gun = base.find_node("gun*", true, true)
+		
 func refresh_info(tinfo):
 	self.info = tinfo
 	
@@ -75,6 +78,8 @@ func get_target():
 	else: return null
 
 func _physics_process(delta):
+	if !info.has("damage"): return 
+	
 	if !_enemies.enemies.has(_target):
 		_target = null
 	else:
@@ -101,19 +106,19 @@ func _physics_process(delta):
 		gun_rot = gun_rot.normalized()
 		gun_rot = base_rot.inverse() * gun_rot
 		
-		var base_basis = _base.global_transform.basis.get_rotation_quat()
+		var base_basis = base.global_transform.basis.get_rotation_quat()
 		var base_angle = base_basis.angle_to(base_rot)
 		if base_angle > 0.01:
 			var base_amt = (info.turn_speed * delta) / base_angle
 			base_amt = min(1, base_amt)
-			_base.global_transform.basis = Basis(base_basis.slerp(Basis(base_rot), base_amt))
+			base.global_transform.basis = Basis(base_basis.slerp(Basis(base_rot), base_amt))
 			
-		var gun_basis = _gun.transform.basis.get_rotation_quat()
+		var gun_basis = gun.transform.basis.get_rotation_quat()
 		var gun_angle = gun_basis.angle_to(gun_rot)
 		if gun_angle > 0.01:
 			var gun_amt = (info.turn_speed * delta) / gun_angle
 			gun_amt = min(1, gun_amt)
-			_gun.transform.basis = Basis(gun_basis.slerp(Basis(gun_rot), gun_amt))
+			gun.transform.basis = Basis(gun_basis.slerp(Basis(gun_rot), gun_amt))
 		
 		cooldown_timer += delta
 		if cooldown_timer > info.cooldown:
@@ -124,7 +129,7 @@ func spread (amt : int) -> Array:
 	var dirs = []
 	var width : int = ceil(sqrt(amt))
 	for i in amt:
-		var dir = _gun.global_transform.basis
+		var dir = gun.global_transform.basis
 		var x = floor(i%width)-width/2+(width+1)%2*0.5
 		var y = floor(i/width)-floor(sqrt(amt)-1)/2
 		var spread = info.projectile.spread
@@ -141,8 +146,8 @@ func shoot ():
 				"ray": shoot_ray(dir)
 	else:
 		match info.projectile.type:
-			"bullet": shoot_bullet(_gun.global_transform.basis)
-			"ray": shoot_ray(_gun.global_transform.basis)
+			"bullet": shoot_bullet(gun.global_transform.basis)
+			"ray": shoot_ray(gun.global_transform.basis)
 
 func shoot_bullet (dir : Basis):
 	var instance = projectile.instance()

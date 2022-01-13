@@ -2,14 +2,17 @@ extends Panel
 
 var _hbox : HBoxContainer
 var _gui_button : Resource = load("res://scenes/gui/gui_turret.tscn")
+var _gui_detail : Resource = load("res://scenes/gui/gui_turret.tscn")
 
 var _options = []
 
 var gui : Control
 
+var hovering = ""
+
 func _fetch ():
 	if gui == null: gui = get_parent().gui
-	if _hbox == null: _hbox = $ScrollContainer/Hbox
+	if _hbox == null: _hbox = $Hbox
 
 func build (options : Array = []):
 	_fetch()
@@ -27,23 +30,23 @@ func build (options : Array = []):
 	for child in _hbox.get_children():
 		if child.get_signal_connection_list("pressed").size() == 0:
 			child.connect("mouse_entered", self, "_on_gui_turret_mouse_entered", [child.name])
-			child.connect("mouse_exited", self, "_on_gui_turret_mouse_entered", [child.name])
+			child.connect("mouse_exited", self, "_on_gui_turret_mouse_exited", [child.name])
 			child.connect("pressed", self, "_on_gui_turret_pressed", [child.name])
 
-func refresh (sel = ""):
+func refresh (sel):
 	_fetch()
-	if sel.type == "":
+	if sel.type == "idle":
 		for child in _hbox.get_children(): child.picked = false
 	if sel.type == name:
 		for child in _hbox.get_children():
 			child.picked = child.name == sel.name
 	
 func _on_gui_turret_mouse_entered(name : String):
-	print(name + " entered from " + self.name)
+	hovering = name;
 	
 func _on_gui_turret_mouse_exited(name : String):
-	print(name + " exited from " + self.name)
+	hovering = ""
 	
 func _on_gui_turret_pressed(name : String):
-	print(name + " pressed from " + self.name)
+	print(self.name + ' ' + name)
 	gui.player.selected_event(name, self.name)

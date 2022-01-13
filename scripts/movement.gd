@@ -28,9 +28,11 @@ var ptr : Node
 var _enemies : Node
 
 var sel = {
-	"type": "", 
+	"type": "idle", 
 	"name": ""
 }
+
+var highlight : Spatial
 
 func _ready():	
 	camera = $camera
@@ -76,6 +78,7 @@ func selected_event (sel_name, sel_type):
 	_gui.refresh(in_editor)
 	
 	if sel_type == "turrets":
+		for child in ptr.get_children(): child.queue_free();
 		var info = load_turrets.info[sel.name]
 		var model = load_turrets.models[info.model_name]
 		var instance_model = model.instance()

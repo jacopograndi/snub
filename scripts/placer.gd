@@ -39,24 +39,31 @@ func _physics_process(_delta):
 	_pointer()
 
 func check_overlap_pointer():
-	var overlap = false
+	var overlap = "clear"
 	var space = get_world().direct_space_state
 
 	var center = ptr.transform.origin + normal*0.25
 	
-	var shape: = BoxShape.new()
+	var shape = BoxShape.new()
 	shape.extents = Vector3(0.24, 0.24, 0.24)
+	
+	var info = load_turrets.info[player.sel.name]
+	if info.has("collider"):
+		if info.collider == "sphere":
+			shape = SphereShape.new()
+			shape.radius = 0.24
 	
 	var params: = PhysicsShapeQueryParameters.new()
 	params.set_shape(shape)
 	params.collision_mask = 3
-	params.transform = Transform.IDENTITY
+	params.transform = ptr.transform
 	params.transform.origin = center
+	params.transform.basis = ptr.transform.basis
 	
 	var result = space.intersect_shape(params)
 	for body in result:
 		if !body.collider.get_parent().is_in_group("attach"): 
-			overlap = true
+			overlap = "world"
 			break
 	
 	for pos in world.get_voxels():
@@ -64,14 +71,14 @@ func check_overlap_pointer():
 		wpos += Vector3.ONE * (0.5 / 2)
 		var dist = (wpos - center).length_squared()
 		if dist < 0.1:
-			overlap = true
+			overlap = "voxels"
 			break
 			
 	for node in path_holder.get_children():
 		var pos = node.transform.origin
 		var dist = (pos - center).length_squared()
 		if dist < 0.1:
-			overlap = true
+			overlap = "path"
 			break
 			
 	return overlap
@@ -90,7 +97,23 @@ func _inst_turret (pos, rot):
 	instance.add_child(instance_model)
 	instance.refresh_model()
 	
+	for child in instance.pivot.get_children():
+		if "attach" in child.name:
+			child.add_to_group("attach")
+			var apos = child.global_transform.origin
+			var arot = child.global_transform.basis.get_rotation_quat()
+			instance.pivot.add_child(_inst_attach(apos, arot))
+			child.queue_free()
+	
 	instance.refresh_info(info)
+	
+	var sb = instance.get_node("turret")
+	if info.has("collider"):
+		if info.collider == "sphere":
+			sb.get_node("CollisionShapeBox").queue_free();
+			sb.get_node("CollisionShapeSphere").disabled = false;
+	else:
+		sb.get_node("CollisionShapeSphere").queue_free();
 	
 func _inst_path_start (pos, rot):
 	var instance = load_scenes.path_start.instance()
@@ -117,11 +140,14 @@ func _inst_attach (pos, rot):
 	attach_point_holder.add_child(instance)
 	instance.transform.origin = pos;
 	instance.transform.basis = Basis(rot);
+	return instance
 	
 func place (group, inst : FuncRef):
 	if Input.is_action_just_pressed("use"):
 		if colliding && group in colliding_group:
-			if !check_overlap_pointer():
+			var overlap = check_overlap_pointer()
+			print(overlap)
+			if overlap == "clear":
 				inst.call_func(ptr.transform.origin, ptr.transform.basis.get_rotation_quat())
 				return "ok"
 	
@@ -130,8 +156,6 @@ func delete (group):
 		if colliding && group in colliding_group:
 			colliding_node.queue_free()
 			
-func select ():
-	pass
 	
 func _pointer ():
 	if player.sel.name == "" or player.sel.type == "": ptr.visible = false
@@ -147,6 +171,8 @@ func _pointer ():
 	var mask = 1
 	if player.sel.name.find("path") != -1: mask = 3 
 	
+	var voxelpos = null;
+	
 	var result = space.intersect_ray(from, to, [], mask)
 	if result.size() > 0:
 		ptr.visible = true
@@ -160,8 +186,8 @@ func _pointer ():
 		colliding_group = node.get_groups()
 		
 		if ("voxels" in colliding_group or "path" in colliding_group):
-			var cpos = result.position - normal * (0.5 / 2)
-			var cursor_position = (cpos / 0.5).floor() * 0.5
+			voxelpos = result.position - normal * (0.5 / 2)
+			var cursor_position = (voxelpos / 0.5).floor() * 0.5
 			cursor_position += Vector3.ONE * (0.5 / 2) + normal * (0.5 / 2)
 			collision_point = cursor_position
 		
@@ -173,10 +199,11 @@ func _pointer ():
 		ptr.transform.origin = collision_point
 	else:
 		colliding = false
+		colliding_node = null
 		colliding_group = []
 		ptr.visible = false
 	
-	var placed = ""
+	var placed = "not ok"
 	match player.sel.type:
 		"map_tools":
 			match player.sel.name:
@@ -193,18 +220,30 @@ func _pointer ():
 					place("voxels", funcref(self, "_inst_attach"))
 					delete("attach")
 		"voxels":
-			pass
+			if voxelpos != null:
+				var pos = Voxel.world_to_grid(voxelpos)
+				if Input.is_action_just_pressed("use"):
+					world.set_voxel(pos + normal, int(player.sel.name))
+					world.update_mesh()
+				if Input.is_action_just_pressed("cancel"):
+					world.erase_voxel(pos)
+					world.update_mesh()
 		"turrets":
 			placed = place("attach", funcref(self, "_inst_turret"))
 			if placed == "ok" and !player.in_editor:
 				resources.sub(load_turrets.info[player.sel.name].cost)
 			delete("turret")
+			
+		"idle":
+			if Input.is_action_just_pressed("use"):
+				if "turrets" in colliding_group:
+					player.highlight = colliding_node
+				else: player.highlight = null
+			
 	
 	if placed == "ok":
 		player.sel.name = ""
-		player.sel.type = ""
+		player.sel.type = "idle"
 		if ptr.has_node("preview"):
 			ptr.get_node("preview").queue_free()
 		player.refresh_gui()
-	else:
-		select()
