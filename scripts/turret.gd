@@ -54,12 +54,13 @@ func filter_in_range(set):
 func filter_visible(set):
 	var space: PhysicsDirectSpaceState = get_world().direct_space_state
 	var from = _shooting_point
+	var mask = 0b1101
 	
 	var filtered = []
 	for target in set:
 		var node = _enemies.node_from_id(target)
 		var to = node.transform.origin
-		var result = space.intersect_ray(from, to, _path.nodes, 1)
+		var result = space.intersect_ray(from, to, _path.nodes, mask)
 		if result.size() > 0:
 			var hit = result.collider.get_parent()
 			if hit == node:
@@ -141,15 +142,17 @@ func spread (amt : int) -> Array:
 func shoot ():
 	if info.projectile.amount > 1:
 		for dir in spread(info.projectile.amount):
-			match info.projectile.type:
-				"bullet": shoot_bullet(dir)
-				"ray": shoot_ray(dir)
+			shoot_switch(dir)
 	else:
-		match info.projectile.type:
-			"bullet": shoot_bullet(gun.global_transform.basis)
-			"ray": shoot_ray(gun.global_transform.basis)
+		shoot_switch(gun.global_transform.basis)
+			
+func shoot_switch (dir : Basis):
+	match info.projectile.type:
+		"bullet": shoot_bullet(dir)
+		"ray": shoot_ray(dir)
+		"bounce": shoot_bullet(dir, true)
 
-func shoot_bullet (dir : Basis):
+func shoot_bullet (dir : Basis, bounce = false):
 	var instance = projectile.instance()
 	_projectiles_holder.add_child(instance)
 	instance.transform.basis = dir
@@ -157,13 +160,15 @@ func shoot_bullet (dir : Basis):
 	instance.shooter = self
 	instance.damage = info.damage
 	instance.speed = info.projectile.speed
+	instance.bounce = bounce
 
 func shoot_ray (dir : Basis):
 	var space: PhysicsDirectSpaceState = get_world().direct_space_state
 	var from = _shooting_point
 	var to = _shooting_point - dir.z*info.range;
+	var mask = 0b1101
 	
-	var result = space.intersect_ray(from, to, _path.nodes, 1)
+	var result = space.intersect_ray(from, to, _path.nodes, mask)
 	if result.size() > 0:
 		var parent = result.collider.get_parent()
 		var groups = parent.get_groups()

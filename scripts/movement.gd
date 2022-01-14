@@ -78,7 +78,8 @@ func selected_event (sel_name, sel_type):
 	_gui.refresh(in_editor)
 	
 	if sel_type == "turrets":
-		for child in ptr.get_children(): child.queue_free();
+		for child in ptr.get_children():
+			if child.name != "base": child.queue_free();
 		var info = load_turrets.info[sel.name]
 		var model = load_turrets.models[info.model_name]
 		var instance_model = model.instance()

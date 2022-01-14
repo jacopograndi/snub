@@ -55,7 +55,7 @@ func check_overlap_pointer():
 	
 	var params: = PhysicsShapeQueryParameters.new()
 	params.set_shape(shape)
-	params.collision_mask = 3
+	params.collision_mask = 0b1101
 	params.transform = ptr.transform
 	params.transform.origin = center
 	params.transform.basis = ptr.transform.basis
@@ -168,8 +168,8 @@ func _pointer ():
 	
 	ptr.transform.origin = to
 	
-	var mask = 1
-	if player.sel.name.find("path") != -1: mask = 3 
+	var mask = 0b1101
+	if player.sel.name.find("path") != -1: mask = 0b1111
 	
 	var voxelpos = null;
 	

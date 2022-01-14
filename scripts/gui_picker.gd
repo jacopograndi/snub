@@ -2,7 +2,6 @@ extends Panel
 
 var _hbox : HBoxContainer
 var _gui_button : Resource = load("res://scenes/gui/gui_turret.tscn")
-var _gui_detail : Resource = load("res://scenes/gui/gui_turret.tscn")
 
 var _options = []
 
