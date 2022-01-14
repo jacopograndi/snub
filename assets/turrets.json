@@ -101,7 +101,7 @@
 		"model_name": "structX.glb"
 	},
 	{
-		"name": "finance",
+		"name": "T generator",
 		"cost": { "T": 800 },
 		"resource_per_wave": { "T": 100 },
 		"model_name": "finance.glb"
