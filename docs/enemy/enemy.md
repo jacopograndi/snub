@@ -49,7 +49,7 @@ The other operators can be obtained by the four operator used:
 
 **effects**
 
-Enemies start with 10 lives. When a life is lost and the shape is T, the shape dies. Otherwise, an operator is lost and lives are set back to 10.
+Enemies start with 10 lives. When lives reaches zero and the shape is T, the shape dies. Otherwise, an operator is lost and lives are set back to 10.
 
 The enemies gain effects based on their topology:
 - T: no effect
