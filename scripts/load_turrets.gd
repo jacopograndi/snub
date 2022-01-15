@@ -41,12 +41,6 @@ func load_info():
 	
 func load_models():
 	models.clear()
-	var files = saveload.parse_dir("res://models/turrets", ".glb")
+	var files = saveload.parse_dir("res://assets/models/turrets", ".glb")
 	for turr in files:
-		models[turr] = load("res://models/turrets/" + turr)
-	
-func load_thumbs():
-	thumbs.clear()
-	var files = saveload.parse_dir("res://textures/thumbnails", ".png")
-	for turr in files:
-		thumbs[turr] = load("res://textures/thumbnails/" + turr)
+		models[turr] = load("res://assets/models/turrets/" + turr)

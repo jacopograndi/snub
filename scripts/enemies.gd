@@ -10,10 +10,10 @@ var _enemy_mat : Material
 var _fx_holder
 var _fx_enemy_damage
 
-var _shapes = {}
-
 var serial_enemy = 0
 var enemies = {}
+
+var load_shapes : Node
 
 var colors = [
 	Color.red,
@@ -35,31 +35,20 @@ func _ready():
 	_path = root.get_node("path")
 	_resources = root.get_node("player").get_node("resources")
 	_dissolve_mat = load("res://shaders/dissolve_mat.tres")
-	_enemy_mat = load("res://models/shapes/Enemy.material")
+	_enemy_mat = load("res://assets/models/shapes/Enemy.material")
 	_enemy_blue = load("res://scenes/enemy.tscn")
 	_fx_enemy_damage = load("res://scenes/fx/enemy_damage.tscn")
 	
-	load_shapes()
-	
-func load_shapes():
-	_shapes = {}
-	var dir = Directory.new()
-	dir.open("res://models/shapes")
-	dir.list_dir_begin(true)
-	var shape = dir.get_next()
-	while shape != "":
-		if (shape.ends_with(".glb")):
-			var model = load("res://models/shapes/" + shape)
-			var sname = shape.substr(0, shape.length()-4)
-			_shapes[sname] = model
-		shape = dir.get_next()
+	var saveload = root.get_node("saveload")
+	load_shapes = saveload.get_node("load_shapes")
+	if !load_shapes.loaded: yield(load_shapes, "done_loading")
 
 func spawn():
 	var instance = _enemy_blue.instance()
 	add_child(instance)
 	instance.transform.origin = _path.nodes[0].transform.origin;
 	instance.name = str(serial_enemy)
-	var instance_model = _shapes[_shapes.keys()[randi() % _shapes.size()]].instance()
+	var instance_model = load_shapes.models[load_shapes.models.keys()[randi() % load_shapes.models.size()]].instance()
 	instance.add_child(instance_model)
 	instance_model.get_child(0).set_surface_material(0, _enemy_mat.duplicate())
 	
@@ -88,7 +77,7 @@ func _physics_process(delta):
 				child.get_node(enemy.ops).queue_free()
 				enemy.ops = enemy.ops.substr(1, enemy.ops.length()-1)
 				enemy.hp = 10
-				var instance_model = _shapes[enemy.ops].instance()
+				var instance_model = load_shapes.models[enemy.ops].instance()
 				child.add_child(instance_model)
 			
 		var speed = 1
@@ -138,7 +127,7 @@ func fx_damage(name):
 	instance.transform = node.transform;
 	instance.refresh_basis()
 	
-	var instance_model = _shapes[enemy["ops"]].instance()
+	var instance_model = load_shapes.models[enemy["ops"]].instance()
 	instance.add_child(instance_model)
 	
 	instance.refresh_shader(_dissolve_mat.duplicate(), colors[enemy.hp-1])

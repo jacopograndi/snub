@@ -1,9 +1,9 @@
-[gd_scene load_steps=20 format=2]
+[gd_scene load_steps=21 format=2]
 
 [ext_resource path="res://scripts/movement.gd" type="Script" id=1]
 [ext_resource path="res://scripts/enemies.gd" type="Script" id=2]
-[ext_resource path="res://assets/addons/voxel-core/classes/voxel_set.gd" type="Script" id=3]
-[ext_resource path="res://assets/addons/voxel-core/classes/voxel_mesh.gd" type="Script" id=4]
+[ext_resource path="res://addons/voxel-core/classes/voxel_set.gd" type="Script" id=3]
+[ext_resource path="res://addons/voxel-core/classes/voxel_mesh.gd" type="Script" id=4]
 [ext_resource path="res://assets/models/pointer.obj" type="ArrayMesh" id=5]
 [ext_resource path="res://scenes/gui.tscn" type="PackedScene" id=6]
 [ext_resource path="res://scripts/path.gd" type="Script" id=7]
@@ -13,6 +13,7 @@
 [ext_resource path="res://scripts/saveload.gd" type="Script" id=11]
 [ext_resource path="res://scripts/resources.gd" type="Script" id=12]
 [ext_resource path="res://scripts/placer.gd" type="Script" id=13]
+[ext_resource path="res://scripts/load_shapes.gd" type="Script" id=14]
 
 [sub_resource type="SphereShape" id=1]
 
@@ -73,6 +74,9 @@ script = ExtResource( 10 )
 
 [node name="saveload_map" type="Node" parent="saveload"]
 script = ExtResource( 8 )
+
+[node name="load_shapes" type="Node" parent="saveload"]
+script = ExtResource( 14 )
 
 [node name="player" type="KinematicBody" parent="."]
 script = ExtResource( 1 )
