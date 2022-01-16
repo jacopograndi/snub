@@ -1,12 +1,16 @@
 ## turret system
 
 ### design
-**upgrade graph:** <br>
+- upgrade graph
+```
 laser -> (heavy laser -> minigun) or (sniper -> railgun) <br>
 shotgun -> cannon -> tesla <br>
 plastic -> heavy plastic -> plasma plastic <br>
 slower -> (heavy slower -> final slower) or (stopper -> heavy stopper) <br>
 T generator -> kad generator -> s generator <br>
+```
+
+- [modules](modules.md)
 
 ---
 
