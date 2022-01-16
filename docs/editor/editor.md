@@ -10,6 +10,9 @@ Requirements:
 
 ---
 
+### control
+- state machine
+
 ### turret
 - **place**
 - remove

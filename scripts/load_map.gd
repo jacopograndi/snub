@@ -10,7 +10,7 @@ func _ready():
 	map_load()
 
 func fetch ():
-	var root = get_tree().root.get_child(0)
+	var root = get_tree().root.get_node("world")
 	if _world == null: 
 		_world = root.get_node("world")
 	if _path_holder == null: 
@@ -104,6 +104,8 @@ func map_load():
 	var state = parse_json(raw)
 	set_map_state(state)
 	print("loaded")
+	
+	_path_holder.refresh_path(false)
 	
 
 func _process(_delta):

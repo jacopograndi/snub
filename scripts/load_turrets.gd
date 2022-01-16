@@ -17,7 +17,13 @@ func _ready():
 	loaded = true
 
 func get_saveload():
-	if saveload == null: saveload = get_tree().root.get_child(0).get_node("saveload")
+	if saveload == null: saveload = get_tree().root.get_node("world").get_node("saveload")
+	
+func get_upg_turrets(turret_name):
+	var results = []
+	for turr in info[turret_name].get("upgrades", []):
+		results += [info[turr]]
+	return results
 	
 func get_base_turrets():
 	var results = []

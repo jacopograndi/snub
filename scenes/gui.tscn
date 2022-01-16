@@ -1,10 +1,8 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://scripts/gui.gd" type="Script" id=1]
 [ext_resource path="res://themes/DarkTheme/Dark.theme" type="Theme" id=2]
 [ext_resource path="res://scripts/gui_picker.gd" type="Script" id=3]
-[ext_resource path="res://scenes/gui/gui_turret.tscn" type="PackedScene" id=4]
-[ext_resource path="res://scripts/gui_turret.gd" type="Script" id=5]
 [ext_resource path="res://scripts/gui_bottom_bar.gd" type="Script" id=6]
 [ext_resource path="res://scripts/gui_top_bar.gd" type="Script" id=7]
 [ext_resource path="res://scenes/gui/gui_turret_detail.tscn" type="PackedScene" id=8]
@@ -13,21 +11,16 @@
 bg_color = Color( 0, 0, 0, 0 )
 border_width_bottom = 1
 
-[sub_resource type="OpenSimplexNoise" id=1]
-seed = -7
-
-[sub_resource type="NoiseTexture" id=2]
-width = 100
-height = 100
-seamless = true
-noise = SubResource( 1 )
-
 [sub_resource type="StyleBoxFlat" id=3]
 resource_local_to_scene = true
 resource_name = "border"
 bg_color = Color( 0.6, 0.6, 0.6, 0 )
 border_width_top = 1
 shadow_offset = Vector2( 1, 1 )
+
+[sub_resource type="StyleBoxFlat" id=5]
+bg_color = Color( 0, 0, 0, 0.529412 )
+border_width_top = 1
 
 [node name="gui" type="Control"]
 anchor_right = 1.0
@@ -194,6 +187,9 @@ margin_top = 5.0
 margin_right = 81.0
 margin_bottom = -5.0
 text = "Next Wave"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="border" type="Panel" parent="top_bar/panel"]
 anchor_right = 1.0
@@ -214,233 +210,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="voxels" type="Panel" parent="bottom_bar"]
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_top = -320.0
-margin_bottom = -220.0
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Hbox" type="HBoxContainer" parent="bottom_bar/voxels"]
-anchor_right = 1.0
-margin_bottom = 50.0
-custom_constants/separation = 1
-alignment = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="0" type="TextureButton" parent="bottom_bar/voxels/Hbox"]
-margin_left = 361.0
-margin_right = 461.0
-margin_bottom = 100.0
-rect_min_size = Vector2( 100, 100 )
-rect_pivot_offset = Vector2( 50, 50 )
-size_flags_horizontal = 9
-script = ExtResource( 5 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="TextureRect" type="ColorRect" parent="bottom_bar/voxels/Hbox/0"]
-margin_right = 100.0
-margin_bottom = 100.0
-mouse_filter = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="1" type="TextureButton" parent="bottom_bar/voxels/Hbox"]
-margin_left = 462.0
-margin_right = 562.0
-margin_bottom = 100.0
-rect_min_size = Vector2( 100, 100 )
-rect_pivot_offset = Vector2( 50, 50 )
-size_flags_horizontal = 9
-script = ExtResource( 5 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="TextureRect" type="ColorRect" parent="bottom_bar/voxels/Hbox/1"]
-margin_right = 100.0
-margin_bottom = 100.0
-mouse_filter = 2
-color = Color( 0.388235, 0, 1, 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="2" type="TextureButton" parent="bottom_bar/voxels/Hbox"]
-margin_left = 563.0
-margin_right = 663.0
-margin_bottom = 100.0
-rect_min_size = Vector2( 100, 100 )
-rect_pivot_offset = Vector2( 50, 50 )
-size_flags_horizontal = 9
-script = ExtResource( 5 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="TextureRect" type="ColorRect" parent="bottom_bar/voxels/Hbox/2"]
-margin_right = 100.0
-margin_bottom = 100.0
-mouse_filter = 2
-color = Color( 0.113725, 0, 1, 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="map_tools" type="Panel" parent="bottom_bar"]
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_top = -220.0
-margin_bottom = -120.0
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Hbox" type="HBoxContainer" parent="bottom_bar/map_tools"]
-anchor_right = 1.0
-margin_bottom = 100.0
-custom_constants/separation = 1
-alignment = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="attach" type="TextureButton" parent="bottom_bar/map_tools/Hbox"]
-margin_left = 310.0
-margin_right = 410.0
-margin_bottom = 100.0
-rect_min_size = Vector2( 100, 100 )
-rect_pivot_offset = Vector2( 50, 50 )
-size_flags_horizontal = 9
-script = ExtResource( 5 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="TextureRect" type="TextureRect" parent="bottom_bar/map_tools/Hbox/attach"]
-margin_right = 100.0
-margin_bottom = 100.0
-texture = SubResource( 2 )
-flip_v = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="bottom_bar/map_tools/Hbox/attach"]
-margin_left = 29.0
-margin_top = 5.0
-margin_right = 69.0
-margin_bottom = 19.0
-text = "attach"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="start path" type="TextureButton" parent="bottom_bar/map_tools/Hbox"]
-margin_left = 411.0
-margin_right = 511.0
-margin_bottom = 100.0
-rect_min_size = Vector2( 100, 100 )
-rect_pivot_offset = Vector2( 50, 50 )
-size_flags_horizontal = 9
-script = ExtResource( 5 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="TextureRect" type="TextureRect" parent="bottom_bar/map_tools/Hbox/start path"]
-margin_right = 100.0
-margin_bottom = 100.0
-texture = SubResource( 2 )
-flip_v = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="bottom_bar/map_tools/Hbox/start path"]
-margin_left = 29.0
-margin_top = 5.0
-margin_right = 69.0
-margin_bottom = 19.0
-text = "start path"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="path" type="TextureButton" parent="bottom_bar/map_tools/Hbox"]
-margin_left = 512.0
-margin_right = 612.0
-margin_bottom = 100.0
-rect_min_size = Vector2( 100, 100 )
-rect_pivot_offset = Vector2( 50, 50 )
-size_flags_horizontal = 9
-script = ExtResource( 5 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="TextureRect" type="TextureRect" parent="bottom_bar/map_tools/Hbox/path"]
-margin_right = 100.0
-margin_bottom = 100.0
-texture = SubResource( 2 )
-flip_v = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="bottom_bar/map_tools/Hbox/path"]
-margin_left = 29.0
-margin_top = 5.0
-margin_right = 69.0
-margin_bottom = 19.0
-text = "path"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="end path" type="TextureButton" parent="bottom_bar/map_tools/Hbox"]
-margin_left = 613.0
-margin_right = 713.0
-margin_bottom = 100.0
-rect_min_size = Vector2( 100, 100 )
-rect_pivot_offset = Vector2( 50, 50 )
-size_flags_horizontal = 9
-script = ExtResource( 5 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="TextureRect" type="TextureRect" parent="bottom_bar/map_tools/Hbox/end path"]
-margin_right = 100.0
-margin_bottom = 100.0
-texture = SubResource( 2 )
-flip_v = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="bottom_bar/map_tools/Hbox/end path"]
-margin_left = 29.0
-margin_top = 5.0
-margin_right = 69.0
-margin_bottom = 19.0
-text = "end path"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="turrets" type="Panel" parent="bottom_bar"]
+[node name="picker" type="Panel" parent="bottom_bar"]
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -451,7 +221,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Hbox" type="HBoxContainer" parent="bottom_bar/turrets"]
+[node name="Hbox" type="HBoxContainer" parent="bottom_bar/picker"]
 anchor_right = 1.0
 margin_bottom = 120.0
 rect_min_size = Vector2( 0, 120 )
@@ -461,15 +231,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="gui_turret" parent="bottom_bar/turrets/Hbox" instance=ExtResource( 4 )]
-margin_left = 411.0
-margin_right = 511.0
-
-[node name="gui_turret2" parent="bottom_bar/turrets/Hbox" instance=ExtResource( 4 )]
-margin_left = 512.0
-margin_right = 612.0
-
-[node name="border" type="Panel" parent="bottom_bar/turrets"]
+[node name="border" type="Panel" parent="bottom_bar/picker"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
@@ -478,5 +240,78 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="editor_bar" type="Panel" parent="bottom_bar"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -150.0
+margin_bottom = -120.0
+custom_styles/panel = SubResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="hbox" type="HBoxContainer" parent="bottom_bar/editor_bar"]
+anchor_bottom = 1.0
+margin_top = 3.0
+margin_bottom = -2.0
+custom_constants/separation = 4
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Control" type="Control" parent="bottom_bar/editor_bar/hbox"]
+margin_bottom = 25.0
+
+[node name="turrets" type="Button" parent="bottom_bar/editor_bar/hbox"]
+margin_left = 4.0
+margin_right = 57.0
+margin_bottom = 25.0
+text = "Turrets"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="path" type="Button" parent="bottom_bar/editor_bar/hbox"]
+margin_left = 61.0
+margin_right = 93.0
+margin_bottom = 25.0
+text = "Path"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="attach" type="Button" parent="bottom_bar/editor_bar/hbox"]
+margin_left = 97.0
+margin_right = 143.0
+margin_bottom = 25.0
+text = "Attach"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="voxel" type="Button" parent="bottom_bar/editor_bar/hbox"]
+margin_left = 147.0
+margin_right = 193.0
+margin_bottom = 25.0
+text = "Voxels"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="palette" type="Button" parent="bottom_bar/editor_bar/hbox"]
+margin_left = 197.0
+margin_right = 250.0
+margin_bottom = 25.0
+text = "Palette"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [connection signal="button_down" from="top_bar/panel/editor_button" to="top_bar" method="_on_editor_button_down"]
 [connection signal="pressed" from="top_bar/panel/wave_button" to="top_bar" method="_on_wave_button_pressed"]
+[connection signal="button_up" from="bottom_bar/editor_bar/hbox/turrets" to="bottom_bar" method="_on_turrets_button_up"]
+[connection signal="button_up" from="bottom_bar/editor_bar/hbox/path" to="bottom_bar" method="_on_path_button_up"]
+[connection signal="button_up" from="bottom_bar/editor_bar/hbox/attach" to="bottom_bar" method="_on_attach_button_up"]
+[connection signal="button_up" from="bottom_bar/editor_bar/hbox/voxel" to="bottom_bar" method="_on_voxel_button_up"]
+[connection signal="button_up" from="bottom_bar/editor_bar/hbox/palette" to="bottom_bar" method="_on_palette_button_up"]

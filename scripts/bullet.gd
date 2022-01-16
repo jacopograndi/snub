@@ -13,7 +13,7 @@ var bounce = false
 var hitlist = []
 
 func _ready():
-	_enemies_holder = get_tree().root.get_child(0).find_node("enemies")
+	_enemies_holder = get_tree().root.get_node("world").find_node("enemies")
 	var _err = $Area.connect("body_entered", self, "collided")
 
 func _physics_process(delta):

@@ -34,7 +34,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/voxel-core/classes/readers/vox.gd"
 }, {
-"base": "Reference",
+"base": "Object",
 "class": "Voxel",
 "language": "GDScript",
 "path": "res://addons/voxel-core/classes/voxel.gd"
@@ -60,7 +60,7 @@ _global_script_class_icons={
 "Reader": "",
 "Utils": "",
 "VoxReader": "",
-"Voxel": "",
+"Voxel": "res://addons/voxel-core/assets/classes/voxel.png",
 "VoxelMesh": "",
 "VoxelSet": "",
 "VoxelTool": ""
@@ -72,9 +72,13 @@ config/name="snub"
 run/main_scene="res://world.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+Globals="*res://scripts/globals.gd"
+
 [editor_plugins]
 
-enabled=PoolStringArray(  )
+enabled=PoolStringArray( "res://addons/voxel-core/plugin.cfg" )
 
 [gui]
 

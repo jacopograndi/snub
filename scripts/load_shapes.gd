@@ -1,11 +1,13 @@
 extends Node
 
-var loaded = false
 var saveload : Node
 var models : Dictionary
+
+var loaded = false
+signal done_loading
 	
 func get_saveload():
-	if saveload == null: saveload = get_tree().root.get_child(0).get_node("saveload")
+	if saveload == null: saveload = get_tree().root.get_node("world").get_node("saveload")
 	
 func _ready():
 	get_saveload()

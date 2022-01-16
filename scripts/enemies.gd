@@ -30,7 +30,7 @@ var colors = [
 
 
 func _ready():
-	var root = get_tree().root.get_child(0)
+	var root = get_tree().root.get_node("world")
 	_fx_holder = root.get_node("fx")
 	_path = root.get_node("path")
 	_resources = root.get_node("player").get_node("resources")

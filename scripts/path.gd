@@ -8,6 +8,14 @@ const dirs = [
 
 var nodes = []
 
+
+func refresh_path (vis):
+	if vis:
+		show()
+	else:
+		var _res = load_nodes()
+		hide()
+
 	
 func next_node (node, dir):
 	var pos : Vector3 = node.transform.origin

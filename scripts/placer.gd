@@ -1,5 +1,6 @@
 extends Spatial
 
+var control : Node
 var player : Spatial
 var world : VoxelMesh
 var turret_holder : Node
@@ -19,9 +20,10 @@ var collision_point : Vector3
 
 func _ready ():
 	player = get_parent()
+	control = player.get_node("control")
 	resources = get_parent().get_node("resources")
 	
-	var root = get_tree().root.get_child(0)
+	var root = get_tree().root.get_node("world")
 	world = root.get_node("world")
 	turret_holder = root.get_node("turrets")
 	attach_point_holder = root.get_node("attach")
@@ -47,11 +49,12 @@ func check_overlap_pointer():
 	var shape = BoxShape.new()
 	shape.extents = Vector3(0.24, 0.24, 0.24)
 	
-	var info = load_turrets.info[player.sel.name]
-	if info.has("collider"):
-		if info.collider == "sphere":
-			shape = SphereShape.new()
-			shape.radius = 0.24
+	if control.statetype == Globals.StateType.TURRET:
+		var info = load_turrets.info[control.selected]
+		if info.has("collider"):
+			if info.collider == "sphere":
+				shape = SphereShape.new()
+				shape.radius = 0.24
 	
 	var params: = PhysicsShapeQueryParameters.new()
 	params.set_shape(shape)
@@ -90,7 +93,7 @@ func _inst_turret (pos, rot):
 	instance.transform.basis = Basis(rot);
 	instance.refresh_normal()
 	
-	var info = load_turrets.info[player.sel.name]
+	var info = load_turrets.info[control.selected]
 	var model = load_turrets.models[info.model_name]
 	var instance_model = model.instance()
 	instance_model.name = "model"
@@ -114,12 +117,14 @@ func _inst_turret (pos, rot):
 			sb.get_node("CollisionShapeSphere").disabled = false;
 	else:
 		sb.get_node("CollisionShapeSphere").queue_free();
+	return instance
 	
 func _inst_path_start (pos, rot):
 	var instance = load_scenes.path_start.instance()
 	path_holder.add_child(instance)
 	instance.transform.origin = pos + normal * 0.25;
 	instance.transform.basis = Basis(rot);
+	return instance
 	
 func _inst_path (pos, rot):
 	var instance = load_scenes.path.instance()
@@ -128,12 +133,14 @@ func _inst_path (pos, rot):
 	instance.transform.basis = Basis(rot);
 	instance.set_name("path")
 	colliding_node.transform.basis = Basis(rot);
+	return instance
 	
 func _inst_path_end (pos, rot):
 	var instance = load_scenes.path_end.instance()
 	path_holder.add_child(instance)
 	instance.transform.origin = pos + normal * 0.25
 	instance.transform.basis = Basis(rot);
+	return instance
 	
 func _inst_attach (pos, rot):
 	var instance = load_scenes.attach_point.instance()
@@ -143,23 +150,24 @@ func _inst_attach (pos, rot):
 	return instance
 	
 func place (group, inst : FuncRef):
-	if Input.is_action_just_pressed("use"):
-		if colliding && group in colliding_group:
-			var overlap = check_overlap_pointer()
-			print(overlap)
-			if overlap == "clear":
-				inst.call_func(ptr.transform.origin, ptr.transform.basis.get_rotation_quat())
-				return "ok"
+	if colliding && group in colliding_group:
+		var overlap = check_overlap_pointer()
+		if overlap == "clear":
+			var obj = inst.call_func(
+				ptr.transform.origin, 
+				ptr.transform.basis.get_rotation_quat())
+			return obj
+	return null
 	
 func delete (group):
-	if Input.is_action_just_pressed("cancel"):
-		if colliding && group in colliding_group:
-			colliding_node.queue_free()
-			
+	if colliding && group in colliding_group:
+		colliding_node.queue_free()
+		return true
+	return false
 	
 func _pointer ():
-	if player.sel.name == "" or player.sel.type == "": ptr.visible = false
-	else: ptr.visible = true
+	if control.state == Globals.PlayerState.PLACE: ptr.visible = true
+	else: ptr.visible = false
 	
 	var space: PhysicsDirectSpaceState = get_world().direct_space_state as PhysicsDirectSpaceState
 	var mouse2d = get_viewport().get_mouse_position()
@@ -169,7 +177,7 @@ func _pointer ():
 	ptr.transform.origin = to
 	
 	var mask = 0b1101
-	if player.sel.name.find("path") != -1: mask = 0b1111
+	if control.statetype == Globals.StateType.PATH: mask = 0b1111
 	
 	var voxelpos = null;
 	
@@ -203,47 +211,57 @@ func _pointer ():
 		colliding_group = []
 		ptr.visible = false
 	
-	var placed = "not ok"
-	match player.sel.type:
-		"map_tools":
-			match player.sel.name:
-				"start path":
-					place("path", funcref(self, "_inst_path_start"))
-					delete("path")
-				"path":
-					place("path", funcref(self, "_inst_path"))
-					delete("path")
-				"end path":
-					place("path", funcref(self, "_inst_path_end"))
-					delete("path")
-				"attach":
-					place("voxels", funcref(self, "_inst_attach"))
-					delete("attach")
-		"voxels":
-			if voxelpos != null:
-				var pos = Voxel.world_to_grid(voxelpos)
+	if control.state == Globals.PlayerState.PICK:
+		match control.statetype:
+			Globals.StateType.TURRET:
 				if Input.is_action_just_pressed("use"):
-					world.set_voxel(pos + normal, int(player.sel.name))
-					world.update_mesh()
-				if Input.is_action_just_pressed("cancel"):
-					world.erase_voxel(pos)
-					world.update_mesh()
-		"turrets":
-			placed = place("attach", funcref(self, "_inst_turret"))
-			if placed == "ok" and !player.in_editor:
-				resources.sub(load_turrets.info[player.sel.name].cost)
-			delete("turret")
-			
-		"idle":
-			if Input.is_action_just_pressed("use"):
-				if "turrets" in colliding_group:
-					player.highlight = colliding_node
-				else: player.highlight = null
-			
+					if "turrets" in colliding_group:
+						control.do(Globals.PlayerActions.SELECT, 
+							{ "selected": colliding_node.name })
 	
-	if placed == "ok":
-		player.sel.name = ""
-		player.sel.type = "idle"
-		if ptr.has_node("preview"):
-			ptr.get_node("preview").queue_free()
-		player.refresh_gui()
+	if control.state == Globals.PlayerState.PLACE:
+		var inst = null
+		var g = null
+		match control.statetype:
+			Globals.StateType.TURRET:
+				g = "attach"
+				inst = funcref(self, "_inst_turret")
+			Globals.StateType.ATTACH:
+				g = "voxels"
+				inst = funcref(self, "_inst_attach")
+			Globals.StateType.VOXEL:
+				if voxelpos != null:
+					var pos = Voxel.world_to_grid(voxelpos)
+					if Input.is_action_just_pressed("use"):
+						var overlap = check_overlap_pointer()
+						if overlap == "clear":
+							world.set_voxel(pos + normal, int(control.selected))
+							world.update_mesh()
+							control.do(Globals.PlayerActions.PLACE)
+					if Input.is_action_just_pressed("cancel"):
+						world.erase_voxel(pos)
+						world.update_mesh()
+						control.do(Globals.PlayerActions.DELETE)
+			Globals.StateType.PATH:
+				g = "path"
+				match control.selected:
+					"start path":
+						g = "voxel"
+						inst = funcref(self, "_inst_path_start")
+					"path": inst = funcref(self, "_inst_path")
+					"end path": inst = funcref(self, "_inst_path_end")
+		
+		if inst != null:
+			if Input.is_action_just_pressed("use"):
+				var placed = place(g, inst);
+				if placed != null:
+					control.do(Globals.PlayerActions.PLACE, 
+						{ "placed": placed.name })
+				else:
+					control.do(Globals.PlayerActions.CANCEL)
+			if Input.is_action_just_pressed("cancel"):
+				var has_deleted = delete(g)
+				if has_deleted:
+					control.do(Globals.PlayerActions.DELETE)
+				else:
+					control.do(Globals.PlayerActions.CANCEL)

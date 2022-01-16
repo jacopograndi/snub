@@ -17,6 +17,39 @@
 		}
 	}, 
 	{
+		"name": "dual laser",
+		"cost": { "T": 100 },
+		"cooldown": 1.0,
+		"damage": 1,
+		"turn_speed": 2,
+		"range": 5,
+		"upgrades": [ "dual laser", "sniper" ],
+		"modules_max": 2,
+		"model_name": "laser.glb",
+		"projectile": {
+			"type": "bullet",
+			"speed": 10,
+			"model_name": "laser_shot.glb",
+			"amount": 1
+		}
+	}, 
+	{
+		"name": "sniper",
+		"cost": { "T": 300 },
+		"cooldown": 1.5,
+		"damage": 3,
+		"turn_speed": 1,
+		"range": 7,
+		"upgrades": [ "railgun" ],
+		"modules_max": 3,
+		"model_name": "sniper.glb",
+		"projectile": {
+			"type": "ray",
+			"model_name": "laser_ray.glb",
+			"amount": 1
+		}
+	},
+	{
 		"name": "shotgun",
 		"cost": { "T": 250 },
 		"cooldown": 2.0,
@@ -32,22 +65,6 @@
 			"model_name": "bullet_shot.glb",
 			"amount": 5,
 			"spread": 10
-		}
-	},
-	{
-		"name": "sniper",
-		"cost": { "T": 300 },
-		"cooldown": 1.5,
-		"damage": 3,
-		"turn_speed": 1,
-		"range": 7,
-		"upgrades": [ "railgun" ],
-		"modules_max": 3,
-		"model_name": "sniper.glb",
-		"projectile": {
-			"type": "ray",
-			"model_name": "laser_ray.glb",
-			"amount": 1
 		}
 	},
 	{

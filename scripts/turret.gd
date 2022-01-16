@@ -21,7 +21,7 @@ var info : Dictionary
 var cooldown_timer = 0
 
 func _ready():
-	var root = get_tree().root.get_child(0)
+	var root = get_tree().root.get_node("world")
 	_path = root.get_node("path")
 	_enemies = root.get_node("enemies")
 	_projectiles_holder = root.get_node("projectiles")

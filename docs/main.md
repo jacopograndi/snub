@@ -71,6 +71,7 @@ regular is planned
 		- endwave report
 
 - [editor](./editor/editor.md):
+	- _control_
 	- turret
 	- _attach_
 	- _path_

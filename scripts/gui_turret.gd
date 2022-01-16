@@ -1,6 +1,8 @@
 extends TextureButton
 
-var _turret : Dictionary
+var option : String
+
+var info : Dictionary
 
 var _color_rect : ColorRect
 var _name_label : Label
@@ -17,23 +19,25 @@ var enabled : bool = false
 
 var _rotate_timer : float
 
-func init (turret : Dictionary):
-	_turret = turret
+func init (turret_name : String):
+	var root = get_tree().root.get_node("world")
+	var saveload = root.get_node("saveload")
+	var load_turrets = saveload.get_node("load_turrets")
+	if !load_turrets.loaded: yield(load_turrets, "done_loading")
+	info = load_turrets.info[turret_name]
+	
 	_color_rect = $ColorRect
 	_name_label = $hbox/name_label
 	_cash_label = $cash_label
 	_viewport = $viewport
 	_spinner = $viewport/spinner
 	
-	var root = get_tree().root.get_child(0)
 	_resources = root.get_node("player").get_node("resources")
 	
-	_name_label.text = turret.name
-	_cash_label.text = _resources.dict_to_str(turret.cost)
+	_name_label.text = turret_name
+	_cash_label.text = _resources.dict_to_str(info.cost)
 	
-	var load_turrets = root.get_node("saveload").get_node("load_turrets")
-	if !load_turrets.loaded: yield(load_turrets, "done_loading")
-	var model = load_turrets.models[turret.model_name]
+	var model = load_turrets.models[info.model_name]
 	_mesh = model.instance()
 	_spinner.add_child(_mesh)
 	
@@ -44,10 +48,10 @@ func _process(delta):
 	if _spinner == null: _spinner = $viewport/spinner
 	if _spinner != null:
 		if _resources == null:
-			var root = get_tree().root.get_child(0)
+			var root = get_tree().root.get_node("world")
 			_resources = root.get_node("player").get_node("resources")
 		
-		var afforded = _resources.greater_than(_turret.cost)
+		var afforded = _resources.greater_than(info.cost)
 		if afforded: _color_rect.color = Color(0,0,0,0)
 		else: _color_rect.color = Color(0,0,0,0.5)
 			

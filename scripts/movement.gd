@@ -1,7 +1,5 @@
 extends KinematicBody
 
-var in_editor : bool = false
-
 var vel = Vector3()
 
 var camera = Camera
@@ -15,78 +13,22 @@ var _pivot
 var _pivot_dist
 var _orbit_timer
 
-var _world : VoxelMesh
-
-var _gui : Control
-
 var _turret_holder : Node
 var _attach_point_holder : Node
 var path_holder : Node
 var load_turrets : Node
-var ptr : Node
 
 var _enemies : Node
-
-var sel = {
-	"type": "idle", 
-	"name": ""
-}
-
-var highlight : Spatial
 
 func _ready():	
 	camera = $camera
 	placer = $placer
 	
-	var root = get_tree().root.get_child(0)
+	var root = get_tree().root.get_node("world")
 	
 	path_holder = root.get_node("path")
-	_gui = root.get_node("gui")
 	_enemies = root.get_node("enemies")
-	ptr = root.find_node("pointer");
-	
-	var saveload = root.get_node("saveload")
-	load_turrets = saveload.get_node("load_turrets")
-	
-	_gui.refresh(in_editor)
-	
-	refresh_path()
-
-func refresh_gui():
-	_gui.refresh(in_editor)
-
-func gui_editor_toggle_event ():
-	in_editor = !in_editor
-	_gui.refresh(in_editor)
-	refresh_path()
-	
-func gui_start_wave_event ():
-	refresh_path()
-	_enemies.spawn()
-	_gui.refresh(in_editor)
-	
-func refresh_path():
-	if in_editor:
-		path_holder.show()
-	else:
-		var _res = path_holder.load_nodes()
-		path_holder.hide()
-	
-func selected_event (sel_name, sel_type):
-	sel.name = sel_name
-	sel.type = sel_type
-	_gui.refresh(in_editor)
-	
-	if sel_type == "turrets":
-		for child in ptr.get_children():
-			if child.name != "base": child.queue_free();
-		var info = load_turrets.info[sel.name]
-		var model = load_turrets.models[info.model_name]
-		var instance_model = model.instance()
-		instance_model.name = "preview"
-		ptr.add_child(instance_model)
-	elif sel_type != "":
-		ptr.get_node("base").visible = true
+		
 
 func look_free (m):
 	self.transform.basis = self.transform.basis.rotated(Vector3.UP, m.x)
