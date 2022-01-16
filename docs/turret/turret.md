@@ -3,11 +3,11 @@
 ### design
 - upgrade graph
 ```
-laser -> (heavy laser -> minigun) or (sniper -> railgun) <br>
-shotgun -> cannon -> tesla <br>
-plastic -> heavy plastic -> plasma plastic <br>
-slower -> (heavy slower -> final slower) or (stopper -> heavy stopper) <br>
-T generator -> kad generator -> s generator <br>
+laser -> (heavy laser -> minigun) or (sniper -> railgun)
+shotgun -> cannon -> tesla
+plastic -> heavy plastic -> plasma plastic 
+slower -> (heavy slower -> final slower) or (stopper -> heavy stopper)
+T generator -> kad generator -> s generator 
 ```
 
 - [modules](modules.md)
