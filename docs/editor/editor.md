@@ -12,6 +12,7 @@ Requirements:
 
 ### control
 - state machine
+- detatched action
 
 ### turret
 - **place**
