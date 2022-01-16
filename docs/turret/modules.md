@@ -18,4 +18,5 @@ Module list:
 	- slowness time +20%
 	- slowness effectiveness +10%
 	- if enemy has >50% hp, +1 damage
-
+- T
+	- +1 resource production
