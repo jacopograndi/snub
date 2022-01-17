@@ -7,6 +7,7 @@ var _enemy_blue
 var _dissolve_mat : ShaderMaterial
 var _enemy_mat : Material
 
+var wave
 var _fx_holder
 var _fx_enemy_damage
 
@@ -32,6 +33,7 @@ var colors = [
 func _ready():
 	var root = get_tree().root.get_node("world")
 	_fx_holder = root.get_node("fx")
+	wave = root.get_node("wave")
 	_path = root.get_node("path")
 	_resources = root.get_node("player").get_node("resources")
 	_dissolve_mat = load("res://shaders/dissolve_mat.tres")
@@ -43,18 +45,25 @@ func _ready():
 	load_shapes = saveload.get_node("load_shapes")
 	if !load_shapes.loaded: yield(load_shapes, "done_loading")
 
-func spawn():
+func spawn(name, node_cur=0, rel_pos=0):
 	var instance = _enemy_blue.instance()
 	add_child(instance)
 	instance.transform.origin = _path.nodes[0].transform.origin;
 	instance.name = str(serial_enemy)
-	var instance_model = load_shapes.models[load_shapes.models.keys()[randi() % load_shapes.models.size()]].instance()
+	var info = load_shapes.info[name]
+	
+	var instance_model = load_shapes.models[info.model_name].instance()
 	instance.add_child(instance_model)
 	instance_model.get_child(0).set_surface_material(0, _enemy_mat.duplicate())
 	
 	var axis : Vector3 = Quat(Vector3(0, randf()*TAU, 0)) * Vector3.RIGHT 
 	enemies[serial_enemy] = { 
-		"cur": 0, "hp": 10, "rel": 0, "ops": instance_model.name,
+		"name": name, 
+		"hp": info.lives, 
+		"slowed_effect": 0, 
+		"slowed_time": 0, 
+		"cur": 0, 
+		"rel": 0, 
 		"axis": [axis.x, axis.y, axis.z] 
 	}
 	serial_enemy += 1
@@ -67,20 +76,17 @@ func _physics_process(delta):
 	for child in get_children():
 		var id = str(child.name).to_int()
 		var enemy = enemies[id]
+		var info = load_shapes.info[enemy.name]
 		
 		if enemy.hp <= 0:
-			if enemy.ops == "T":
-				delist.append(id)
-				enemy.rel = 0
-				continue
-			else:
-				child.get_node(enemy.ops).queue_free()
-				enemy.ops = enemy.ops.substr(1, enemy.ops.length()-1)
-				enemy.hp = 10
-				var instance_model = load_shapes.models[enemy.ops].instance()
-				child.add_child(instance_model)
+			delist.append(id)
+			enemy.rel = 0
+			for n in info.get("spawn_num", 0):
+				# todo rel +- epslion
+				spawn(enemy.spawn_on_death, enemy.cur, enemy.rel - n/10)
+			continue
 			
-		var speed = 1
+		var speed = info.speed
 		enemy.rel += speed * delta
 		while enemy.rel > 1: 
 			enemy.rel -= 1
@@ -90,6 +96,7 @@ func _physics_process(delta):
 		if destination >= _path.nodes.size():
 			delist.append(id)
 			enemy.rel = 0
+			_resources.lives -= load_shapes.get_damage(enemy.hp, enemy.name)
 			continue
 			
 		var from = _path.nodes[enemy.cur].transform.origin
@@ -99,26 +106,31 @@ func _physics_process(delta):
 		var axis = Vector3(enemy.axis[0], enemy.axis[1], enemy.axis[2])
 		child.transform.basis = child.transform.basis.rotated(axis, delta)
 		
-		var mesh : MeshInstance = child.get_node(enemy.ops).get_child(0)
-		mesh.get_active_material(0).albedo_color = colors[enemy.hp-1]
+		var mesh : MeshInstance = child.get_child(1).get_child(0)
+		mesh.get_active_material(0).albedo_color = colors[0]
 	
 	for id in delist:
 		get_node(str(id)).queue_free()
 		enemies.erase(id)
+		
+		if enemies.size() == 0:
+			wave.end()
 
 
 func damage(name, amt):
 	var id = int(name)
 	var enemy = enemies[id]
+	var info = load_shapes.info[enemy.name]
 	
 	if enemy.hp > 0:
 		enemy.hp -= amt
-		_resources.add({ enemy.ops[0]: amt })
+		_resources.add({ info.resource: amt })
 		fx_damage(name)
 	
 func fx_damage(name):
 	var id = int(name)
 	var enemy = enemies[id]
+	var info = load_shapes.info[enemy.name]
 	
 	var instance = _fx_enemy_damage.instance()
 	_fx_holder.add_child(instance)
@@ -127,7 +139,7 @@ func fx_damage(name):
 	instance.transform = node.transform;
 	instance.refresh_basis()
 	
-	var instance_model = load_shapes.models[enemy["ops"]].instance()
+	var instance_model = load_shapes.models[info.model_name].instance()
 	instance.add_child(instance_model)
 	
-	instance.refresh_shader(_dissolve_mat.duplicate(), colors[enemy.hp-1])
+	instance.refresh_shader(_dissolve_mat.duplicate(), colors[0])

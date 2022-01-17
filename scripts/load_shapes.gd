@@ -13,6 +13,7 @@ func _ready():
 	get_saveload()
 	load_models()
 	load_info()
+	calc_cost()
 	emit_signal("done_loading")
 	loaded = true
 	
@@ -41,3 +42,22 @@ func load_info():
 		if parsed != null:
 			for tin in parsed:
 				info[tin.name] = tin
+
+
+func calc_cost ():
+	for i in info: info[i].cost = get_lives(i)
+
+func get_lives (name):
+	var i = info[name]
+	var hp = i.lives
+	for n in i.get("spawn_num", 0):
+		hp += get_lives(i.spawn_on_death)
+	return hp
+	
+func get_damage (hp, name):
+	var i = info[name]
+	var dam = hp * i.damage
+	for n in i.get("spawn_num", 0):
+		var spawn_info = info[i.spawn_on_death]
+		dam += get_damage(spawn_info.lives, i.spawn_on_death)
+	return dam

@@ -7,11 +7,13 @@ var selected = ""
 var editing_turret = ""
 
 var gui : Node
+var wave : Node
 var player : Node
 var placer : Node
 var resources : Node
 var pointer : Node
 var turret_holder : Node
+var enemies_holder : Node
 var load_turrets : Node
 var path : Node
 var world : VoxelMesh
@@ -19,6 +21,7 @@ var world : VoxelMesh
 func fetch ():
 	if load_turrets != null: return
 	var root = get_tree().root.get_node("world")
+	wave = root.get_node("wave")
 	player = root.get_node("player")
 	resources = player.get_node("resources")
 	placer = player.get_node("placer")
@@ -27,6 +30,7 @@ func fetch ():
 	world = root.get_node("world")
 	path = root.get_node("path")
 	turret_holder = root.get_node("turrets")
+	enemies_holder = root.get_node("enemies")
 	var saveload = root.get_node("saveload")
 	load_turrets = saveload.get_node("load_turrets")
 	if !load_turrets.loaded: yield(load_turrets, "done_loading")
@@ -86,7 +90,7 @@ func sell (turr_name):
 		turr.transform.origin, turr.transform.basis.get_rotation_quat())
 
 func _refresh ():
-	gui.refresh(ineditor)
+	gui.refresh()
 	pointer.refresh(state, statetype, selected)
 	
 func to_pick ():
@@ -203,10 +207,11 @@ func do (action, par = {}):
 
 func gui_editor_toggle_event ():
 	ineditor = !ineditor
-	gui.refresh(ineditor)
+	gui.refresh()
 	path.refresh_path(ineditor)
 	
 func gui_start_wave_event ():
+	if wave.ongoing: return
 	path.refresh_path(ineditor)
-	#_enemies.spawn()
-	gui.refresh(ineditor)
+	wave.start()
+	gui.refresh()

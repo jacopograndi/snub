@@ -6,6 +6,8 @@ var a : float = 0
 var d : float = 0
 var s : float = 0
 
+var lives : int = 0
+
 func get_names(): return "Tkads"
 
 func dict_to_str (cost):

@@ -13,22 +13,9 @@ var _pivot
 var _pivot_dist
 var _orbit_timer
 
-var _turret_holder : Node
-var _attach_point_holder : Node
-var path_holder : Node
-var load_turrets : Node
-
-var _enemies : Node
-
 func _ready():	
 	camera = $camera
 	placer = $placer
-	
-	var root = get_tree().root.get_node("world")
-	
-	path_holder = root.get_node("path")
-	_enemies = root.get_node("enemies")
-		
 
 func look_free (m):
 	self.transform.basis = self.transform.basis.rotated(Vector3.UP, m.x)
