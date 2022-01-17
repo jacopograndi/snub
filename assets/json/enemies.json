@@ -1,0 +1,311 @@
+[
+    {
+        "lives": 10,
+        "speed": 1,
+        "damage": 1,
+        "spawn_num": 1,
+        "name": "T",
+        "model_name": "T.glb",
+        "thumbnail_name": "T.png"
+    },
+    {
+        "lives": 10,
+        "speed": 1.2,
+        "damage": 1,
+        "spawn_num": 1,
+        "name": "kT",
+        "spawn_on_death": "T",
+        "model_name": "kT.glb",
+        "thumbnail_name": "kT.png"
+    },
+    {
+        "lives": 10,
+        "speed": 1.2,
+        "damage": 1,
+        "spawn_num": 2,
+        "name": "dkT",
+        "spawn_on_death": "kT",
+        "model_name": "dkT.glb",
+        "thumbnail_name": "dkT.png"
+    },
+    {
+        "lives": 10,
+        "speed": 1,
+        "damage": 2,
+        "spawn_num": 1,
+        "name": "aT",
+        "spawn_on_death": "T",
+        "model_name": "aT.glb",
+        "thumbnail_name": "aT.png"
+    },
+    {
+        "lives": 10,
+        "speed": 1.2,
+        "damage": 2,
+        "spawn_num": 1,
+        "name": "kaT",
+        "spawn_on_death": "aT",
+        "model_name": "kaT.glb",
+        "thumbnail_name": "kaT.png"
+    },
+    {
+        "lives": 10,
+        "speed": 1.2,
+        "damage": 2,
+        "spawn_num": 2,
+        "name": "dkaT",
+        "spawn_on_death": "kaT",
+        "model_name": "dkaT.glb",
+        "thumbnail_name": "dkaT.png"
+    },
+    {
+        "lives": 10,
+        "speed": 1,
+        "damage": 4,
+        "spawn_num": 1,
+        "name": "aaT",
+        "spawn_on_death": "aT",
+        "model_name": "aaT.glb",
+        "thumbnail_name": "aaT.png"
+    },
+    {
+        "lives": 10,
+        "speed": 1,
+        "damage": 4,
+        "spawn_num": 2,
+        "name": "daaT",
+        "spawn_on_death": "aaT",
+        "model_name": "daaT.glb",
+        "thumbnail_name": "daaT.png"
+    },
+    {
+        "lives": 10,
+        "speed": 1.2,
+        "damage": 4,
+        "spawn_num": 2,
+        "name": "kdaaT",
+        "spawn_on_death": "daaT",
+        "model_name": "kdaaT.glb",
+        "thumbnail_name": "kdaaT.png"
+    },
+    {
+        "lives": 10,
+        "speed": 1.2,
+        "damage": 4,
+        "spawn_num": 4,
+        "name": "dkdaaT",
+        "spawn_on_death": "kdaaT",
+        "model_name": "dkdaaT.glb",
+        "thumbnail_name": "dkdaaT.png"
+    },
+    {
+        "lives": 10,
+        "speed": 1,
+        "damage": 8,
+        "spawn_num": 1,
+        "name": "aaaT",
+        "spawn_on_death": "aaT",
+        "model_name": "aaaT.glb",
+        "thumbnail_name": "aaaT.png"
+    },
+    {
+        "lives": 10,
+        "speed": 1,
+        "damage": 8,
+        "spawn_num": 2,
+        "name": "daaaT",
+        "spawn_on_death": "aaaT",
+        "model_name": "daaaT.glb",
+        "thumbnail_name": "daaaT.png"
+    },
+    {
+        "lives": 10,
+        "speed": 1,
+        "damage": 2,
+        "spawn_num": 2,
+        "name": "daT",
+        "spawn_on_death": "aT",
+        "model_name": "daT.glb",
+        "thumbnail_name": "daT.png"
+    },
+    {
+        "lives": 10,
+        "speed": 1.2,
+        "damage": 2,
+        "spawn_num": 2,
+        "name": "kdaT",
+        "spawn_on_death": "daT",
+        "model_name": "kdaT.glb",
+        "thumbnail_name": "kdaT.png"
+    },
+    {
+        "lives": 10,
+        "speed": 1.2,
+        "damage": 2,
+        "spawn_num": 4,
+        "name": "dkdaT",
+        "spawn_on_death": "kdaT",
+        "model_name": "dkdaT.glb",
+        "thumbnail_name": "dkdaT.png"
+    },
+    {
+        "lives": 30,
+        "speed": 0.8,
+        "damage": 2,
+        "spawn_num": 1,
+        "name": "saT",
+        "spawn_on_death": "aT",
+        "model_name": "saT.glb",
+        "thumbnail_name": "saT.png"
+    },
+    {
+        "lives": 30,
+        "speed": 0.8,
+        "damage": 2,
+        "spawn_num": 2,
+        "name": "dsaT",
+        "spawn_on_death": "saT",
+        "model_name": "dsaT.glb",
+        "thumbnail_name": "dsaT.png"
+    },
+    {
+        "lives": 30,
+        "speed": 0.8,
+        "damage": 1,
+        "spawn_num": 1,
+        "name": "sT",
+        "spawn_on_death": "T",
+        "model_name": "sT.glb",
+        "thumbnail_name": "sT.png"
+    },
+    {
+        "lives": 30,
+        "speed": 0.96,
+        "damage": 1,
+        "spawn_num": 1,
+        "name": "ksT",
+        "spawn_on_death": "sT",
+        "model_name": "ksT.glb",
+        "thumbnail_name": "ksT.png"
+    },
+    {
+        "lives": 30,
+        "speed": 0.96,
+        "damage": 1,
+        "spawn_num": 2,
+        "name": "dksT",
+        "spawn_on_death": "ksT",
+        "model_name": "dksT.glb",
+        "thumbnail_name": "dksT.png"
+    },
+    {
+        "lives": 30,
+        "speed": 0.8,
+        "damage": 2,
+        "spawn_num": 1,
+        "name": "asT",
+        "spawn_on_death": "sT",
+        "model_name": "asT.glb",
+        "thumbnail_name": "asT.png"
+    },
+    {
+        "lives": 30,
+        "speed": 0.8,
+        "damage": 2,
+        "spawn_num": 2,
+        "name": "dasT",
+        "spawn_on_death": "asT",
+        "model_name": "dasT.glb",
+        "thumbnail_name": "dasT.png"
+    },
+    {
+        "lives": 30,
+        "speed": 0.96,
+        "damage": 2,
+        "spawn_num": 2,
+        "name": "kdasT",
+        "spawn_on_death": "dasT",
+        "model_name": "kdasT.glb",
+        "thumbnail_name": "kdasT.png"
+    },
+    {
+        "lives": 30,
+        "speed": 0.96,
+        "damage": 2,
+        "spawn_num": 4,
+        "name": "dkdasT",
+        "spawn_on_death": "kdasT",
+        "model_name": "dkdasT.glb",
+        "thumbnail_name": "dkdasT.png"
+    },
+    {
+        "lives": 30,
+        "speed": 0.8,
+        "damage": 4,
+        "spawn_num": 1,
+        "name": "aasT",
+        "spawn_on_death": "asT",
+        "model_name": "aasT.glb",
+        "thumbnail_name": "aasT.png"
+    },
+    {
+        "lives": 30,
+        "speed": 0.8,
+        "damage": 4,
+        "spawn_num": 2,
+        "name": "daasT",
+        "spawn_on_death": "aasT",
+        "model_name": "daasT.glb",
+        "thumbnail_name": "daasT.png"
+    },
+    {
+        "lives": 30,
+        "speed": 0.8,
+        "damage": 1,
+        "spawn_num": 2,
+        "name": "dsT",
+        "spawn_on_death": "sT",
+        "model_name": "dsT.glb",
+        "thumbnail_name": "dsT.png"
+    },
+    {
+        "lives": 30,
+        "speed": 0.96,
+        "damage": 1,
+        "spawn_num": 2,
+        "name": "kdsT",
+        "spawn_on_death": "dsT",
+        "model_name": "kdsT.glb",
+        "thumbnail_name": "kdsT.png"
+    },
+    {
+        "lives": 30,
+        "speed": 0.96,
+        "damage": 1,
+        "spawn_num": 4,
+        "name": "dkdsT",
+        "spawn_on_death": "kdsT",
+        "model_name": "dkdsT.glb",
+        "thumbnail_name": "dkdsT.png"
+    },
+    {
+        "lives": 90,
+        "speed": 0.6400000000000001,
+        "damage": 1,
+        "spawn_num": 1,
+        "name": "ssT",
+        "spawn_on_death": "sT",
+        "model_name": "ssT.glb",
+        "thumbnail_name": "ssT.png"
+    },
+    {
+        "lives": 90,
+        "speed": 0.6400000000000001,
+        "damage": 1,
+        "spawn_num": 2,
+        "name": "dssT",
+        "spawn_on_death": "ssT",
+        "model_name": "dssT.glb",
+        "thumbnail_name": "dssT.png"
+    }
+]
