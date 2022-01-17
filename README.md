@@ -1,7 +1,7 @@
 # snub
 Coop tower defence game.
 
-made using
+Made using
 - Godot
 - Blender
 
