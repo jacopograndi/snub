@@ -71,8 +71,10 @@ def get_enemy (node):
     enemy['name'] = node
     if node in edges:
         enemy['spawn_on_death'] = edges[node]
+    else: enemy['spawn_num'] = 0
     enemy["model_name"] = node + '.glb'
     enemy["thumbnail_name"] = node + '.png'
+    enemy["resource"] = node[0]
     return enemy
 
 
