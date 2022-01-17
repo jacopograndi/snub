@@ -58,7 +58,7 @@ The enemies gain effects based on their topology:
 - d: duplicates on death (only when losing the d)
 - s: armored (multiplies life by 3), speed -20%
 
-Effect stack exponentially, so aaaT does 2^2^2=8x more damage, ssT is very slow and very armored (3^3=9 shots).
+Effect stack multiplicativly, so aaaT does `2*2*2=8x` more damage, ssT is very slow and very armored.
 
 ```
 Example for ssT: 

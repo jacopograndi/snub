@@ -12,6 +12,8 @@ enum StateType {
 	PATH,
 	VOXEL,
 	VOXEL_PALETTE
+	TARGETING
+	MODULES
 }
 
 enum PlayerActions { 

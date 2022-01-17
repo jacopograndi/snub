@@ -11,15 +11,16 @@
 bg_color = Color( 0, 0, 0, 0 )
 border_width_bottom = 1
 
-[sub_resource type="StyleBoxFlat" id=6]
-bg_color = Color( 0, 0, 0, 0.482353 )
-
 [sub_resource type="StyleBoxFlat" id=3]
 resource_local_to_scene = true
 resource_name = "border"
 bg_color = Color( 0.6, 0.6, 0.6, 0 )
 border_width_top = 1
 shadow_offset = Vector2( 1, 1 )
+
+[sub_resource type="StyleBoxFlat" id=5]
+bg_color = Color( 0, 0, 0, 0.482353 )
+border_width_top = 1
 
 [node name="gui" type="Control"]
 anchor_right = 1.0
@@ -215,7 +216,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = -120.0
 margin_bottom = 1.0
-custom_styles/panel = SubResource( 6 )
 script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -246,6 +246,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = -150.0
 margin_bottom = -120.0
+custom_styles/panel = SubResource( 5 )
 __meta__ = {
 "_edit_use_anchors_": false
 }

@@ -39,9 +39,10 @@ func get_base_turrets():
 
 func load_info():
 	info.clear()
-	var files = saveload.parse_dir("res://assets", ".json")
-	for turr in files:
-		var parsed = saveload.load_parse_json("res://assets/" + turr)
+	var files = saveload.parse_dir("res://assets/json", ".json")
+	for f in files:
+		if f != "turrets.json": continue
+		var parsed = saveload.load_parse_json("res://assets/json/" + f)
 		if parsed != null:
 			for tin in parsed:
 				info[tin.name] = tin

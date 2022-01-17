@@ -86,14 +86,14 @@ func check_overlap_pointer():
 			
 	return overlap
 	
-func _inst_turret (pos, rot):
+func inst_turret (pos, rot, sel):
 	var instance = load_scenes.turret.instance()
 	turret_holder.add_child(instance)
 	instance.transform.origin = pos;
 	instance.transform.basis = Basis(rot);
 	instance.refresh_normal()
 	
-	var info = load_turrets.info[control.selected]
+	var info = load_turrets.info[sel]
 	var model = load_turrets.models[info.model_name]
 	var instance_model = model.instance()
 	instance_model.name = "model"
@@ -105,7 +105,7 @@ func _inst_turret (pos, rot):
 			child.add_to_group("attach")
 			var apos = child.global_transform.origin
 			var arot = child.global_transform.basis.get_rotation_quat()
-			instance.pivot.add_child(_inst_attach(apos, arot))
+			instance.pivot.add_child(inst_attach(apos, arot))
 			child.queue_free()
 	
 	instance.refresh_info(info)
@@ -119,51 +119,65 @@ func _inst_turret (pos, rot):
 		sb.get_node("CollisionShapeSphere").queue_free();
 	return instance
 	
-func _inst_path_start (pos, rot):
+func inst_path_start (pos, rot):
 	var instance = load_scenes.path_start.instance()
 	path_holder.add_child(instance)
 	instance.transform.origin = pos + normal * 0.25;
 	instance.transform.basis = Basis(rot);
 	return instance
 	
-func _inst_path (pos, rot):
+func inst_path (pos, rot):
 	var instance = load_scenes.path.instance()
 	path_holder.add_child(instance)
 	instance.transform.origin = pos + normal * 0.25;
 	instance.transform.basis = Basis(rot);
 	instance.set_name("path")
+	# remove collision depencency
 	colliding_node.transform.basis = Basis(rot);
 	return instance
 	
-func _inst_path_end (pos, rot):
+func inst_path_end (pos, rot):
 	var instance = load_scenes.path_end.instance()
 	path_holder.add_child(instance)
 	instance.transform.origin = pos + normal * 0.25
 	instance.transform.basis = Basis(rot);
 	return instance
 	
-func _inst_attach (pos, rot):
+func inst_attach (pos, rot):
 	var instance = load_scenes.attach_point.instance()
 	attach_point_holder.add_child(instance)
 	instance.transform.origin = pos;
 	instance.transform.basis = Basis(rot);
 	return instance
 	
-func place (group, inst : FuncRef):
-	if colliding && group in colliding_group:
-		var overlap = check_overlap_pointer()
-		if overlap == "clear":
-			var obj = inst.call_func(
-				ptr.transform.origin, 
-				ptr.transform.basis.get_rotation_quat())
-			return obj
-	return null
+func inst_voxel (pos, rot):
+	world.set_voxel(pos + normal, int(control.selected))
+	world.update_mesh()
 	
-func delete (group):
-	if colliding && group in colliding_group:
-		colliding_node.queue_free()
-		return true
-	return false
+func nearest_child (node, pos):
+	var mindist = 99999999999;
+	var minnode = null
+	for child in node.get_children():
+		var dist = child.transform.origin.distance_squared_to(pos)
+		if mindist > dist:
+			mindist = dist
+			minnode = child
+	return { "node": minnode, "dist": mindist }
+	
+func delete (statetype, pos, rot):
+	match statetype:
+		Globals.StateType.TURRET: 
+			var result = nearest_child(turret_holder, pos)
+			if result.dist < 0.01: result.node.queue_free()
+		Globals.StateType.ATTACH: 
+			var result = nearest_child(attach_point_holder, pos)
+			if result.dist < 0.01: result.node.queue_free()
+		Globals.StateType.PATH: 
+			var result = nearest_child(path_holder, pos)
+			if result.dist < 0.01: result.node.queue_free()
+		Globals.StateType.VOXEL:
+			world.erase_voxel(pos)
+			world.update_mesh()
 	
 func _pointer ():
 	if control.state == Globals.PlayerState.PLACE: ptr.visible = true
@@ -220,48 +234,38 @@ func _pointer ():
 							{ "selected": colliding_node.name })
 	
 	if control.state == Globals.PlayerState.PLACE:
-		var inst = null
 		var g = null
 		match control.statetype:
-			Globals.StateType.TURRET:
-				g = "attach"
-				inst = funcref(self, "_inst_turret")
-			Globals.StateType.ATTACH:
-				g = "voxels"
-				inst = funcref(self, "_inst_attach")
+			Globals.StateType.TURRET: g = "attach"
+			Globals.StateType.ATTACH: g = "voxels"
 			Globals.StateType.VOXEL:
 				if voxelpos != null:
 					var pos = Voxel.world_to_grid(voxelpos)
 					if Input.is_action_just_pressed("use"):
 						var overlap = check_overlap_pointer()
 						if overlap == "clear":
-							world.set_voxel(pos + normal, int(control.selected))
-							world.update_mesh()
-							control.do(Globals.PlayerActions.PLACE)
+							control.do(Globals.PlayerActions.PLACE, { 
+								"pos": pos, 
+								"rot": ptr.transform.basis.get_rotation_quat() })
 					if Input.is_action_just_pressed("cancel"):
-						world.erase_voxel(pos)
-						world.update_mesh()
-						control.do(Globals.PlayerActions.DELETE)
+						control.do(Globals.PlayerActions.DELETE, { 
+								"pos": pos, 
+								"rot": ptr.transform.basis.get_rotation_quat() })
 			Globals.StateType.PATH:
 				g = "path"
 				match control.selected:
-					"start path":
-						g = "voxel"
-						inst = funcref(self, "_inst_path_start")
-					"path": inst = funcref(self, "_inst_path")
-					"end path": inst = funcref(self, "_inst_path_end")
+					"start path": g = "voxel"
 		
-		if inst != null:
-			if Input.is_action_just_pressed("use"):
-				var placed = place(g, inst);
-				if placed != null:
-					control.do(Globals.PlayerActions.PLACE, 
-						{ "placed": placed.name })
+		if Input.is_action_just_pressed("use"):
+			if colliding && g in colliding_group:
+				var overlap = check_overlap_pointer()
+				if overlap == "clear":
+					control.do(Globals.PlayerActions.PLACE, { 
+						"pos": ptr.transform.origin, 
+						"rot": ptr.transform.basis.get_rotation_quat() })
 				else:
 					control.do(Globals.PlayerActions.CANCEL)
-			if Input.is_action_just_pressed("cancel"):
-				var has_deleted = delete(g)
-				if has_deleted:
-					control.do(Globals.PlayerActions.DELETE)
-				else:
-					control.do(Globals.PlayerActions.CANCEL)
+		if Input.is_action_just_pressed("cancel"):
+			control.do(Globals.PlayerActions.DELETE, { 
+				"pos": colliding_node.transform.origin, 
+				"rot": colliding_node.transform.basis.get_rotation_quat() })

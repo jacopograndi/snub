@@ -7,6 +7,9 @@ var selected = ""
 var editing_turret = ""
 
 var gui : Node
+var player : Node
+var placer : Node
+var resources : Node
 var pointer : Node
 var turret_holder : Node
 var load_turrets : Node
@@ -16,8 +19,11 @@ var world : VoxelMesh
 func fetch ():
 	if load_turrets != null: return
 	var root = get_tree().root.get_node("world")
-	gui = root.get_node("gui")
+	player = root.get_node("player")
+	resources = player.get_node("resources")
+	placer = player.get_node("placer")
 	pointer = root.get_node("pointer")
+	gui = root.get_node("gui")
 	world = root.get_node("world")
 	path = root.get_node("path")
 	turret_holder = root.get_node("turrets")
@@ -48,8 +54,7 @@ func build_option (st, sttype):
 					for i in world.voxel_set.size():
 						var details = world.voxel_set.get_voxel(i)
 						var color = Color(1, 0, 1)
-						if details.has("color"):
-							color = details.color
+						if details.has("color"): color = details.color
 						opts += [ { "type": "color", "name": i, "color": color} ]
 						
 		Globals.PlayerState.EDIT:
@@ -58,12 +63,27 @@ func build_option (st, sttype):
 					var tname = turret_holder.get_node(editing_turret).info.name
 					for t in load_turrets.get_upg_turrets(tname):
 						opts += [ { "type": "turret upg", "name": t.name } ]
-					opts += [ { "type": "text", "name": "priority" } ]
+					opts += [ { "type": "text", "name": "targeting" } ]
 					opts += [ { "type": "text", "name": "modules" } ]
 					opts += [ { "type": "text", "name": "sell" } ]
 					opts += [ { "type": "text", "name": "back" } ]
 					
+				Globals.StateType.TARGETING:
+					opts += [ { "type": "text", "name": "back" } ]
+					
+				Globals.StateType.MODULES:
+					opts += [ { "type": "text", "name": "back" } ]
+					
 	gui.bottom_bar.picker.build(opts)
+	
+func sell (turr_name):
+	var turr = turret_holder.get_node(turr_name)
+	var info = turr.info
+	
+	resources.add(info.cost)
+	
+	placer.delete(Globals.StateType.TURRET, 
+		turr.transform.origin, turr.transform.basis.get_rotation_quat())
 
 func _refresh ():
 	gui.refresh(ineditor)
@@ -106,11 +126,27 @@ func do (action, par = {}):
 				Globals.PlayerActions.PLACE:
 					match statetype:
 						Globals.StateType.TURRET:
-							editing_turret = par.placed
+							var obj = placer.inst_turret(
+								par.pos, par.rot, selected)
+							editing_turret = obj.name
 							state = Globals.PlayerState.EDIT
 							build_option(state, statetype)
+						Globals.StateType.ATTACH:
+							placer.inst_attach(par.pos, par.rot)
+						Globals.StateType.PATH:
+							match selected:
+								"start path": placer.inst_path_start(par.pos, par.rot)
+								"path": placer.inst_path(par.pos, par.rot)
+								"end path": placer.inst_path_end(par.pos, par.rot)
+						Globals.StateType.VOXEL:
+							placer.inst_voxel(par.pos, par.rot)
 							
-				Globals.PlayerActions.DELETE: pass
+				Globals.PlayerActions.PICK:
+					selected = par.selected
+							
+				Globals.PlayerActions.DELETE: 
+					placer.delete(statetype, par.pos, par.rot)
+					
 				Globals.PlayerActions.CANCEL: to_pick()
 					
 				Globals.PlayerActions.CHANGE_TYPE:
@@ -127,8 +163,31 @@ func do (action, par = {}):
 						Globals.StateType.TURRET:
 							selected = par.selected
 							match par.selected:
-								"back": 
+								"targeting": 
+									statetype = Globals.StateType.TARGETING
+									build_option(state, statetype)
+								"modules": 
+									statetype = Globals.StateType.MODULES
+									build_option(state, statetype)
+								"sell": 
+									sell(editing_turret)
 									to_pick()
+								"back": to_pick()
+									
+						Globals.StateType.TARGETING:
+							selected = par.selected
+							match par.selected:
+								"back": 
+									statetype = Globals.StateType.TURRET
+									build_option(state, statetype)
+									
+						Globals.StateType.MODULES:
+							selected = par.selected
+							match par.selected:
+								"back": 
+									statetype = Globals.StateType.TURRET
+									build_option(state, statetype)
+								
 						_: to_pick() 
 							
 				Globals.PlayerActions.CANCEL: to_pick()
