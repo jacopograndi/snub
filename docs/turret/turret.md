@@ -10,7 +10,32 @@ slower -> (heavy slower -> final slower) or (stopper -> heavy stopper)
 T generator -> kad generator -> s generator 
 ```
 
-- [modules](modules.md)
+### turret list
+- [laser](./turrets/laser.md)
+- [heavy laser](./turrets/heavy%20laser.md)
+- [minigun](./turrets/minigun.md)
+- [sniper](./turrets/sniper.md)
+- [railgun](./turrets/railgun.md)
+- [shotgun](./turrets/shotgun.md)
+- [cannon](./turrets/cannon.md)
+- [tesla](./turrets/tesla.md)
+- [plastic](./turrets/plastic.md)
+- [heavy plastic](./turrets/heavy%20plastic.md)
+- [plasma plastic](./turrets/plasma%20plastic/md)
+- [slower](./turrets/slower.md)
+- [heavy slower](./turrets/heavy%20slower.md)
+- [final slower](./turrets/final%20slower.md)
+- [stopper](./turrets/stopper.md)
+- [heavy stopper](./turrets/heavy%20stopper.md)
+- [struct I](./turrets/struct%20I.md)
+- [struct T](./turrets/struct%20T.md)
+- [struct X](./turrets/struct%20X.md)
+- [T generator](./turrets/T%20generator.md)
+- [kad generator](./turrets/kad%20generator.md)
+- [s generator](./turrets/s%20generator.md)
+
+
+### [modules](modules.md)
 
 ---
 

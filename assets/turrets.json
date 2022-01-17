@@ -4,27 +4,43 @@
 		"cost": { "T": 100 },
 		"cooldown": 1.0,
 		"damage": 1,
-		"turn_speed": 2,
+		"turn_speed": 3,
 		"range": 5,
-		"upgrades": [ "dual laser", "sniper" ],
-		"modules_max": 2,
+		"upgrades": [ "heavy laser", "sniper" ],
+		"modules_max": 6,
 		"model_name": "laser.glb",
 		"projectile": {
 			"type": "bullet",
-			"speed": 10,
+			"speed": 5,
 			"model_name": "laser_shot.glb",
 			"amount": 1
 		}
 	}, 
 	{
-		"name": "dual laser",
-		"cost": { "T": 100 },
-		"cooldown": 1.0,
-		"damage": 1,
-		"turn_speed": 2,
+		"name": "heavy laser",
+		"cost": { "T": 250 },
+		"cooldown": 0.9,
+		"damage": 2,
+		"turn_speed": 3,
 		"range": 5,
-		"upgrades": [ "dual laser", "sniper" ],
-		"modules_max": 2,
+		"upgrades": [ "minigun" ],
+		"modules_max": 6,
+		"model_name": "laser.glb",
+		"projectile": {
+			"type": "bullet",
+			"speed": 5,
+			"model_name": "laser_shot.glb",
+			"amount": 1
+		}
+	}, 
+	{
+		"name": "minigun",
+		"cost": { "T": 1000 },
+		"cooldown": 0.2,
+		"damage": 2,
+		"turn_speed": 10,
+		"range": 5,
+		"modules_max": 6,
 		"model_name": "laser.glb",
 		"projectile": {
 			"type": "bullet",
@@ -36,16 +52,31 @@
 	{
 		"name": "sniper",
 		"cost": { "T": 300 },
-		"cooldown": 1.5,
+		"cooldown": 2,
 		"damage": 3,
 		"turn_speed": 1,
 		"range": 7,
 		"upgrades": [ "railgun" ],
-		"modules_max": 3,
+		"modules_max": 4,
 		"model_name": "sniper.glb",
 		"projectile": {
 			"type": "ray",
-			"model_name": "laser_ray.glb",
+			"model_name": "ray_laser.glb",
+			"amount": 1
+		}
+	},
+	{
+		"name": "railgun",
+		"cost": { "T": 1200 },
+		"cooldown": 5,
+		"damage": 10,
+		"turn_speed": 1,
+		"range": 8,
+		"modules_max": 4,
+		"model_name": "sniper.glb",
+		"projectile": {
+			"type": "ray",
+			"model_name": "ray_laser.glb",
 			"amount": 1
 		}
 	},
@@ -54,31 +85,99 @@
 		"cost": { "T": 250 },
 		"cooldown": 2.0,
 		"damage": 1,
-		"turn_speed": 1.2,
-		"range": 5,
+		"turn_speed": 1,
+		"range": 4,
 		"upgrades": [ "cannon" ],
 		"modules_max": 3,
 		"model_name": "shotgun.glb",
 		"projectile": {
 			"type": "bullet",
-			"speed": 10,
+			"speed": 5,
 			"model_name": "bullet_shot.glb",
 			"amount": 5,
 			"spread": 10
 		}
 	},
 	{
+		"name": "cannon",
+		"cost": { "T": 400 },
+		"cooldown": 2.0,
+		"damage": 5,
+		"turn_speed": 1,
+		"range": 4,
+		"upgrades": [ "tesla" ],
+		"modules_max": 3,
+		"model_name": "shotgun.glb",
+		"projectile": {
+			"type": "bomb",
+			"speed": 3,
+			"model_name": "bullet_shot.glb"
+		}
+	},
+	{
+		"name": "tesla",
+		"cost": { "T": 800 },
+		"cooldown": 1.0,
+		"damage": 2,
+		"turn_speed": 1,
+		"range": 4,
+		"modules_max": 5,
+		"model_name": "shotgun.glb",
+		"projectile": {
+			"type": "shock",
+			"jumps": 5,
+			"model_name": "bullet_shot.glb"
+		}
+	},
+	{
 		"name": "plastic",
 		"cost": { "T": 400 },
-		"cooldown": 1.2,
+		"cooldown": 1.5,
 		"damage": 1,
-		"turn_speed": 1,
+		"turn_speed": 0.5,
 		"range": 6,
 		"upgrades": [ "heavy plastic" ],
 		"modules_max": 3,
 		"model_name": "plastic.glb",
 		"projectile": {
 			"type": "bounce",
+			"model_name": "bullet_bounce.glb",
+			"speed": 5,
+			"max bounces": 2,
+			"amount": 1
+		}
+	},
+	{
+		"name": "heavy plastic",
+		"cost": { "T": 400 },
+		"cooldown": 1.5,
+		"damage": 2,
+		"turn_speed": 0.5,
+		"range": 6,
+		"upgrades": [ "plasma plastic" ],
+		"modules_max": 3,
+		"model_name": "plastic.glb",
+		"projectile": {
+			"type": "bounce",
+			"model_name": "bullet_bounce.glb",
+			"speed": 7.5,
+			"max bounces": 4,
+			"amount": 1
+		}
+	},
+	{
+		"name": "plasma plastic",
+		"cost": { "T": 800 },
+		"cooldown": 1,
+		"damage": 2,
+		"turn_speed": 0.5,
+		"range": 6,
+		"upgrades": [ "plasma plastic" ],
+		"modules_max": 4,
+		"model_name": "plastic.glb",
+		"projectile": {
+			"type": "bounce",
+			"lifetime": 5,
 			"model_name": "bullet_bounce.glb",
 			"speed": 10,
 			"amount": 1
@@ -87,19 +186,103 @@
 	{
 		"name": "slower",
 		"cost": { "T": 350 },
-		"cooldown": 2,
-		"damage": 0,
-		"turn_speed": 1,
+		"cooldown": 1,
+		"turn_speed": 5,
 		"range": 5,
 		"upgrades": [ "heavy slower" ],
 		"modules_max": 4,
 		"model_name": "slower.glb",
+		"slowness": 5,
 		"projectile": {
 			"type": "bullet",
 			"model_name": "bullet_slow.glb",
 			"speed": 10,
 			"amount": 1
 		}
+	},
+	{
+		"name": "heavy slower",
+		"cost": { "T": 500 },
+		"cooldown": 0.7,
+		"turn_speed": 5,
+		"range": 6,
+		"upgrades": [ "final slower" ],
+		"modules_max": 5,
+		"model_name": "slower.glb",
+		"slowness": 7,
+		"projectile": {
+			"type": "bullet",
+			"model_name": "bullet_slow.glb",
+			"speed": 10,
+			"amount": 1
+		}
+	},
+	{
+		"name": "final slower",
+		"cost": { "T": 1000 },
+		"cooldown": 2,
+		"turn_speed": 5,
+		"range": 7,
+		"modules_max": 5,
+		"model_name": "slower.glb",
+		"slowness": 10,
+		"projectile": {
+			"type": "ray",
+			"model_name": "ray_slow.glb",
+			"amount": 1
+		}
+	},
+	{
+		"name": "stopper",
+		"cost": { "t": 750 },
+		"cooldown": 5,
+		"range": 2,
+		"upgrades": [ "heavy stopper" ],
+		"modules_max": 4,
+		"model_name": "slower.glb",
+		"stop": 3,
+		"projectile": {
+			"type": "area",
+			"model_name": "ray_slow.glb",
+			"amount": 1
+		}
+	},
+	{
+		"name": "heavy stopper",
+		"cost": { "t": 1000 },
+		"cooldown": 3,
+		"range": 3,
+		"modules_max": 5,
+		"model_name": "slower.glb",
+		"stop": 5,
+		"projectile": {
+			"type": "area",
+			"model_name": "ray_slow.glb",
+			"amount": 1
+		}
+	},
+	{
+		"name": "T generator",
+		"cost": { "T": 800 },
+		"resource_per_wave": { "T": 100 },
+		"upgrades": [ "kad generator" ],
+		"max_modules": 2,
+		"model_name": "finance.glb"
+	},
+	{
+		"name": "kad generator",
+		"cost": { "T": 400 },
+		"resource_per_wave": { "k": 30, "a": 30, "d": 30 },
+		"upgrades": [ "s generator" ],
+		"max_modules": 2,
+		"model_name": "finance.glb"
+	},
+	{
+		"name": "s generator",
+		"cost": { "T": 800 },
+		"resource_per_wave": { "s": 30 },
+		"max_modules": 3,
+		"model_name": "finance.glb"
 	},
 	{
 		"name": "struct I",
@@ -116,11 +299,5 @@
 		"name": "struct X",
 		"cost": { "T": 150 },
 		"model_name": "structX.glb"
-	},
-	{
-		"name": "T generator",
-		"cost": { "T": 800 },
-		"resource_per_wave": { "T": 100 },
-		"model_name": "finance.glb"
 	}
 ]

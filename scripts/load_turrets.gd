@@ -21,6 +21,7 @@ func get_saveload():
 	
 func get_upg_turrets(turret_name):
 	var results = []
+	return results # otherwise everything breaks
 	for turr in info[turret_name].get("upgrades", []):
 		results += [info[turr]]
 	return results
