@@ -5,6 +5,7 @@ var hbox_global
 var _turret_holder : Node
 var _turret_values : Resource = load("res://scenes/gui/gui_turret_values.tscn")
 var load_turrets : Node
+var resources : Node
 
 var gui : Control
 
@@ -17,6 +18,8 @@ func _fetch ():
 	
 	hbox_labels = $"hbox_global/hbox_labels"
 	hbox_global = $"hbox_global"
+	
+	resources = root.get_node("player").get_node("resources")
 	
 	load_turrets = root.get_node("saveload").get_node("load_turrets")
 	if !load_turrets.loaded: yield(load_turrets, "done_loading")

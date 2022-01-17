@@ -9,6 +9,7 @@
 		"upgrades": [ "heavy laser", "sniper" ],
 		"modules_max": 6,
 		"model_name": "laser.glb",
+		"thumbnail_name": "laser.png",
 		"projectile": {
 			"type": "bullet",
 			"speed": 5,
@@ -26,6 +27,7 @@
 		"upgrades": [ "minigun" ],
 		"modules_max": 6,
 		"model_name": "laser.glb",
+		"thumbnail_name": "laser.png",
 		"projectile": {
 			"type": "bullet",
 			"speed": 5,
@@ -42,6 +44,7 @@
 		"range": 5,
 		"modules_max": 6,
 		"model_name": "laser.glb",
+		"thumbnail_name": "laser.png",
 		"projectile": {
 			"type": "bullet",
 			"speed": 10,
@@ -59,6 +62,7 @@
 		"upgrades": [ "railgun" ],
 		"modules_max": 4,
 		"model_name": "sniper.glb",
+		"thumbnail_name": "sniper.png",
 		"projectile": {
 			"type": "ray",
 			"model_name": "ray_laser.glb",
@@ -74,6 +78,7 @@
 		"range": 8,
 		"modules_max": 4,
 		"model_name": "sniper.glb",
+		"thumbnail_name": "laser.png",
 		"projectile": {
 			"type": "ray",
 			"model_name": "ray_laser.glb",
@@ -90,6 +95,7 @@
 		"upgrades": [ "cannon" ],
 		"modules_max": 3,
 		"model_name": "shotgun.glb",
+		"thumbnail_name": "shotgun.png",
 		"projectile": {
 			"type": "bullet",
 			"speed": 5,
@@ -108,6 +114,7 @@
 		"upgrades": [ "tesla" ],
 		"modules_max": 3,
 		"model_name": "shotgun.glb",
+		"thumbnail_name": "shotgun.png",
 		"projectile": {
 			"type": "bomb",
 			"speed": 3,
@@ -123,6 +130,7 @@
 		"range": 4,
 		"modules_max": 5,
 		"model_name": "shotgun.glb",
+		"thumbnail_name": "shotgun.png",
 		"projectile": {
 			"type": "shock",
 			"jumps": 5,
@@ -139,6 +147,7 @@
 		"upgrades": [ "heavy plastic" ],
 		"modules_max": 3,
 		"model_name": "plastic.glb",
+		"thumbnail_name": "plastic.png",
 		"projectile": {
 			"type": "bounce",
 			"model_name": "bullet_bounce.glb",
@@ -157,6 +166,7 @@
 		"upgrades": [ "plasma plastic" ],
 		"modules_max": 3,
 		"model_name": "plastic.glb",
+		"thumbnail_name": "plastic.png",
 		"projectile": {
 			"type": "bounce",
 			"model_name": "bullet_bounce.glb",
@@ -175,6 +185,7 @@
 		"upgrades": [ "plasma plastic" ],
 		"modules_max": 4,
 		"model_name": "plastic.glb",
+		"thumbnail_name": "plastic.png",
 		"projectile": {
 			"type": "bounce",
 			"lifetime": 5,
@@ -189,9 +200,10 @@
 		"cooldown": 1,
 		"turn_speed": 5,
 		"range": 5,
-		"upgrades": [ "heavy slower" ],
+		"upgrades": [ "heavy slower", "stopper" ],
 		"modules_max": 4,
 		"model_name": "slower.glb",
+		"thumbnail_name": "slower.png",
 		"slowness": 5,
 		"projectile": {
 			"type": "bullet",
@@ -209,6 +221,7 @@
 		"upgrades": [ "final slower" ],
 		"modules_max": 5,
 		"model_name": "slower.glb",
+		"thumbnail_name": "slower.png",
 		"slowness": 7,
 		"projectile": {
 			"type": "bullet",
@@ -225,6 +238,7 @@
 		"range": 7,
 		"modules_max": 5,
 		"model_name": "slower.glb",
+		"thumbnail_name": "slower.png",
 		"slowness": 10,
 		"projectile": {
 			"type": "ray",
@@ -234,12 +248,13 @@
 	},
 	{
 		"name": "stopper",
-		"cost": { "t": 750 },
+		"cost": { "T": 750 },
 		"cooldown": 5,
 		"range": 2,
 		"upgrades": [ "heavy stopper" ],
 		"modules_max": 4,
 		"model_name": "slower.glb",
+		"thumbnail_name": "slower.png",
 		"stop": 3,
 		"projectile": {
 			"type": "area",
@@ -249,11 +264,12 @@
 	},
 	{
 		"name": "heavy stopper",
-		"cost": { "t": 1000 },
+		"cost": { "T": 1000 },
 		"cooldown": 3,
 		"range": 3,
 		"modules_max": 5,
 		"model_name": "slower.glb",
+		"thumbnail_name": "slower.png",
 		"stop": 5,
 		"projectile": {
 			"type": "area",
@@ -267,7 +283,8 @@
 		"resource_per_wave": { "T": 100 },
 		"upgrades": [ "kad generator" ],
 		"max_modules": 2,
-		"model_name": "finance.glb"
+		"model_name": "finance.glb",
+		"thumbnail_name": "finance.png"
 	},
 	{
 		"name": "kad generator",
@@ -275,29 +292,34 @@
 		"resource_per_wave": { "k": 30, "a": 30, "d": 30 },
 		"upgrades": [ "s generator" ],
 		"max_modules": 2,
-		"model_name": "finance.glb"
+		"model_name": "finance.glb",
+		"thumbnail_name": "finance.png"
 	},
 	{
 		"name": "s generator",
 		"cost": { "T": 800 },
 		"resource_per_wave": { "s": 30 },
 		"max_modules": 3,
-		"model_name": "finance.glb"
+		"model_name": "finance.glb",
+		"thumbnail_name": "finance.png"
 	},
 	{
 		"name": "struct I",
 		"cost": { "T": 50 },
-		"model_name": "structI.glb"
+		"model_name": "structI.glb",
+		"thumbnail_name": "structI.png"
 	},
 	{
 		"name": "struct T",
 		"cost": { "T": 100 },
 		"collider": "sphere",
-		"model_name": "structT.glb"
+		"model_name": "structT.glb",
+		"thumbnail_name": "structT.png"
 	},
 	{
 		"name": "struct X",
 		"cost": { "T": 150 },
-		"model_name": "structX.glb"
+		"model_name": "structX.glb",
+		"thumbnail_name": "structX.png"
 	}
 ]

@@ -58,9 +58,9 @@ func build_option (st, sttype):
 					var tname = turret_holder.get_node(editing_turret).info.name
 					for t in load_turrets.get_upg_turrets(tname):
 						opts += [ { "type": "turret upg", "name": t.name } ]
-					opts += [ { "type": "text", "name": "sell" } ]
 					opts += [ { "type": "text", "name": "priority" } ]
 					opts += [ { "type": "text", "name": "modules" } ]
+					opts += [ { "type": "text", "name": "sell" } ]
 					opts += [ { "type": "text", "name": "back" } ]
 					
 	gui.bottom_bar.picker.build(opts)

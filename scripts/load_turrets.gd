@@ -4,7 +4,7 @@ var saveload : Node
 
 var info : Dictionary
 var models : Dictionary
-var thumbs : Dictionary
+var thumbnails : Dictionary
 
 var loaded : bool = false
 signal done_loading
@@ -13,6 +13,7 @@ func _ready():
 	get_saveload()
 	load_models()
 	load_info()
+	load_thumbnails()
 	emit_signal("done_loading")
 	loaded = true
 
@@ -21,7 +22,6 @@ func get_saveload():
 	
 func get_upg_turrets(turret_name):
 	var results = []
-	return results # otherwise everything breaks
 	for turr in info[turret_name].get("upgrades", []):
 		results += [info[turr]]
 	return results
@@ -51,3 +51,10 @@ func load_models():
 	var files = saveload.parse_dir("res://assets/models/turrets", ".glb")
 	for turr in files:
 		models[turr] = load("res://assets/models/turrets/" + turr)
+		
+func load_thumbnails():
+	thumbnails.clear()
+	var files = saveload.parse_dir("res://assets/textures/thumbnails/turrets", ".png")
+	for turr in files:
+		print(turr)
+		thumbnails[turr] = load("res://assets/textures/thumbnails/turrets/" + turr)

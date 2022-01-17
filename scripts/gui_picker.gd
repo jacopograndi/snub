@@ -2,17 +2,23 @@ extends Panel
 
 var _hbox : HBoxContainer
 var _gui_button : Resource = load("res://scenes/gui/gui_button.tscn")
-var _gui_turret_button : Resource = load("res://scenes/gui/gui_turret.tscn")
 
 var _options = []
 
 var gui : Control
+var load_turrets : Node
+var resources : Node
 
 var hovering = ""
 
 func _fetch ():
 	if gui == null: gui = get_parent().gui
 	if _hbox == null: _hbox = $Hbox
+	
+	var root = get_tree().root.get_node("world")
+	resources = root.get_node("player").get_node("resources")
+	load_turrets = root.get_node("saveload").get_node("load_turrets")
+	if !load_turrets.loaded: yield(load_turrets, "done_loading")
 
 func build (options : Array = []):
 	_fetch()
@@ -26,28 +32,25 @@ func build (options : Array = []):
 	
 	_options = options
 	for opt in _options:
-		var button = null
-		if opt.type == "turret buy":
-			button = _gui_turret_button.instance()
-			_hbox.add_child(button)
-			button.init(opt.name)
-		if opt.type == "turret upg":
-			button = _gui_turret_button.instance()
-			_hbox.add_child(button)
-			button.init(opt.name)
-		if opt.type == "text":
-			button = _gui_button.instance()
-			_hbox.add_child(button)
-			button.get_node("hbox").get_node("name_label").text = opt.name
-		if opt.type == "color":
-			button = _gui_button.instance()
-			_hbox.add_child(button)
-			button.get_node("hbox").get_node("name_label").text = ""
-			button.get_node("color").color = opt.color
+		var button = _gui_button.instance()
+		button.option = opt.name
 		
-		if button != null:
-			button.option = opt.name
-		else: print("no option for " + str(opt))
+		if opt.type == "turret buy":
+			var tinfo = load_turrets.info[opt.name]
+			button.get_node("name").text = tinfo.name
+			button.get_node("cash").text = resources.dict_to_str(tinfo.cost)
+			button.get_node("texture").texture = load_turrets.thumbnails[tinfo.thumbnail_name]
+		if opt.type == "turret upg":
+			var tinfo = load_turrets.info[opt.name]
+			button.get_node("name").text = tinfo.name
+			button.get_node("cash").text = resources.dict_to_str(tinfo.cost)
+			button.get_node("texture").texture = load_turrets.thumbnails[tinfo.thumbnail_name]
+		if opt.type == "text":
+			button.get_node("name").text = opt.name
+		if opt.type == "color":
+			button.get_node("name").text = ""
+			button.get_node("color").color = opt.color
+		_hbox.add_child(button)
 		
 	for child in _hbox.get_children():
 		child.connect("mouse_entered", self, "_on_gui_turret_mouse_entered", [child.option])
@@ -56,11 +59,6 @@ func build (options : Array = []):
 
 func refresh ():
 	_fetch()
-	if gui.control.state == Globals.PlayerState.PICK:
-		for child in _hbox.get_children(): child.picked = false
-	if gui.control.selected == name:
-		for child in _hbox.get_children():
-			child.picked = child.name == gui.control.selected
 	
 func _on_gui_turret_mouse_entered(option : String):
 	hovering = option;
