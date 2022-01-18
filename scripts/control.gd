@@ -15,24 +15,28 @@ var pointer : Node
 var turret_holder : Node
 var enemies_holder : Node
 var load_turrets : Node
+var saveload_map : Node
 var path : Node
 var world : VoxelMesh
 
 func fetch ():
 	if load_turrets != null: return
 	var root = get_tree().root.get_node("world")
-	wave = root.get_node("wave")
 	player = root.get_node("player")
 	resources = player.get_node("resources")
 	placer = player.get_node("placer")
+	
+	wave = root.get_node("wave")
 	pointer = root.get_node("pointer")
 	gui = root.get_node("gui")
 	world = root.get_node("world")
 	path = root.get_node("path")
 	turret_holder = root.get_node("turrets")
 	enemies_holder = root.get_node("enemies")
+	
 	var saveload = root.get_node("saveload")
 	load_turrets = saveload.get_node("load_turrets")
+	saveload_map = saveload.get_node("saveload_map")
 	if !load_turrets.loaded: yield(load_turrets, "done_loading")
 	
 func _ready ():
@@ -59,16 +63,18 @@ func build_option (st, sttype):
 						var details = world.voxel_set.get_voxel(i)
 						var color = Color(1, 0, 1)
 						if details.has("color"): color = details.color
-						opts += [ { "type": "color", "name": i, "color": color} ]
+						opts += [ { "type": "color", "name": str(i), "color": color} ]
 						
 		Globals.PlayerState.EDIT:
 			match sttype:
 				Globals.StateType.TURRET:
-					var tname = turret_holder.get_node(editing_turret).info.name
-					for t in load_turrets.get_upg_turrets(tname):
+					var tinfo = turret_holder.get_node(editing_turret).info
+					for t in load_turrets.get_upg_turrets(tinfo.name):
 						opts += [ { "type": "turret upg", "name": t.name } ]
-					opts += [ { "type": "text", "name": "targeting" } ]
-					opts += [ { "type": "text", "name": "modules" } ]
+					if tinfo.has("projectile"):
+						opts += [ { "type": "text", "name": "targeting" } ]
+					if tinfo.get("modules_max", 0) > 0:
+						opts += [ { "type": "text", "name": "modules" } ]
 					opts += [ { "type": "text", "name": "sell" } ]
 					opts += [ { "type": "text", "name": "back" } ]
 					
@@ -106,7 +112,7 @@ func do (action, par = {}):
 		Globals.PlayerState.PICK:
 			match action:
 				Globals.PlayerActions.PICK:
-					selected = par.selected
+					selected = par.name
 					state = Globals.PlayerState.PLACE
 					
 				Globals.PlayerActions.SELECT:
@@ -143,10 +149,10 @@ func do (action, par = {}):
 								"path": placer.inst_path(par.pos, par.rot)
 								"end path": placer.inst_path_end(par.pos, par.rot)
 						Globals.StateType.VOXEL:
-							placer.inst_voxel(par.pos, par.rot)
+							placer.inst_voxel(par.pos, par.rot, selected)
 							
 				Globals.PlayerActions.PICK:
-					selected = par.selected
+					selected = par.name
 							
 				Globals.PlayerActions.DELETE: 
 					placer.delete(statetype, par.pos, par.rot)
@@ -165,29 +171,40 @@ func do (action, par = {}):
 				Globals.PlayerActions.PICK:
 					match statetype:
 						Globals.StateType.TURRET:
-							selected = par.selected
-							match par.selected:
-								"targeting": 
-									statetype = Globals.StateType.TARGETING
+							selected = par.name
+							match par.type:
+								"turret upg":
+									var prv = turret_holder.get_node(editing_turret)
+									var pos = prv.transform.origin
+									var rot = prv.transform.basis.get_rotation_quat()
+									placer.delete(statetype, pos, rot)
+									var obj = placer.inst_turret(pos, rot, par.name)
+									editing_turret = obj.name
+									state = Globals.PlayerState.EDIT
 									build_option(state, statetype)
-								"modules": 
-									statetype = Globals.StateType.MODULES
-									build_option(state, statetype)
-								"sell": 
-									sell(editing_turret)
-									to_pick()
-								"back": to_pick()
+								_ :
+									match par.name:
+										"targeting": 
+											statetype = Globals.StateType.TARGETING
+											build_option(state, statetype)
+										"modules": 
+											statetype = Globals.StateType.MODULES
+											build_option(state, statetype)
+										"sell": 
+											sell(editing_turret)
+											to_pick()
+										"back": to_pick()
 									
 						Globals.StateType.TARGETING:
-							selected = par.selected
-							match par.selected:
+							selected = par.name
+							match par.name:
 								"back": 
 									statetype = Globals.StateType.TURRET
 									build_option(state, statetype)
 									
 						Globals.StateType.MODULES:
-							selected = par.selected
-							match par.selected:
+							selected = par.name
+							match par.name:
 								"back": 
 									statetype = Globals.StateType.TURRET
 									build_option(state, statetype)
@@ -207,6 +224,10 @@ func do (action, par = {}):
 
 func gui_editor_toggle_event ():
 	ineditor = !ineditor
+	if !ineditor: 
+		statetype = Globals.StateType.TURRET
+		to_pick()
+	
 	gui.refresh()
 	path.refresh_path(ineditor)
 	
@@ -214,4 +235,21 @@ func gui_start_wave_event ():
 	if wave.ongoing: return
 	path.refresh_path(ineditor)
 	wave.start()
+	gui.refresh()
+	
+func gui_save_map_event (): saveload_map.map_save()
+
+func gui_save_as_map_event (mapname : String):
+	saveload_map.mapname = mapname
+	saveload_map.map_save()
+	
+func gui_delete_map_event (mapname : String):
+	saveload_map.map_delete(mapname)
+	
+func gui_change_map_event (mapname : String):
+	saveload_map.mapname = mapname
+	saveload_map.map_load()
+	gui.load_map.visible = false
+	
+	path.refresh_path(ineditor)
 	gui.refresh()

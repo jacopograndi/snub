@@ -4,6 +4,8 @@
 snub is inspired by [Terrorhedron](https://store.steampowered.com/app/299720/Terrorhedron_Tower_Defense/). <br>
 The goal of this project is to expand the Terrorhedron ideas. The main addition are a map editor (even the terrain), a more complex enemy system (topological hierarchy) and more turret upgrades and customization (modules for small bonuses). Mod support and multiplayer are planned.
 
+### [balance](balance.md)
+
 ---
 
 ### credits:

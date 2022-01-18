@@ -46,6 +46,7 @@ func _ready():
 	if !load_shapes.loaded: yield(load_shapes, "done_loading")
 
 func spawn(name, node_cur=0, rel_pos=0):
+	print("spawned " + name)
 	var instance = _enemy_blue.instance()
 	add_child(instance)
 	instance.transform.origin = _path.nodes[0].transform.origin;
@@ -62,14 +63,21 @@ func spawn(name, node_cur=0, rel_pos=0):
 		"hp": info.lives, 
 		"slowed_effect": 0, 
 		"slowed_time": 0, 
-		"cur": 0, 
-		"rel": 0, 
+		"cur": node_cur, 
+		"rel": rel_pos, 
 		"axis": [axis.x, axis.y, axis.z] 
 	}
+	instance.transform.origin = abs_pos(serial_enemy)
 	serial_enemy += 1
 	
 func node_from_id (id):
 	return get_node(str(id))
+	
+func abs_pos (id):
+	var enemy = enemies[id]
+	var from = _path.nodes[enemy.cur].transform.origin
+	var to = _path.nodes[enemy.cur+1].transform.origin
+	return lerp(from, to, enemy.rel)
 
 func _physics_process(delta):
 	var delist = []
@@ -81,9 +89,9 @@ func _physics_process(delta):
 		if enemy.hp <= 0:
 			delist.append(id)
 			enemy.rel = 0
-			for n in info.get("spawn_num", 0):
+			for n in range(info.get("spawn_num", 0)):
 				# todo rel +- epslion
-				spawn(enemy.spawn_on_death, enemy.cur, enemy.rel - n/10)
+				spawn(info.spawn_on_death, enemy.cur, enemy.rel - n/10)
 			continue
 			
 		var speed = info.speed
@@ -99,9 +107,7 @@ func _physics_process(delta):
 			_resources.lives -= load_shapes.get_damage(enemy.hp, enemy.name)
 			continue
 			
-		var from = _path.nodes[enemy.cur].transform.origin
-		var to = _path.nodes[destination].transform.origin
-		child.transform.origin = lerp(from, to, enemy.rel)
+		child.transform.origin = abs_pos(id)
 		
 		var axis = Vector3(enemy.axis[0], enemy.axis[1], enemy.axis[2])
 		child.transform.basis = child.transform.basis.rotated(axis, delta)

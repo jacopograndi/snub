@@ -150,8 +150,8 @@ func inst_attach (pos, rot):
 	instance.transform.basis = Basis(rot);
 	return instance
 	
-func inst_voxel (pos, rot):
-	world.set_voxel(pos + normal, int(control.selected))
+func inst_voxel (pos, rot, block):
+	world.set_voxel(pos + normal, int(block))
 	world.update_mesh()
 	
 func nearest_child (node, pos):
@@ -254,7 +254,7 @@ func _pointer ():
 			Globals.StateType.PATH:
 				g = "path"
 				match control.selected:
-					"start path": g = "voxel"
+					"start path": g = "voxels"
 		
 		if Input.is_action_just_pressed("use"):
 			if colliding && g in colliding_group:
@@ -266,6 +266,7 @@ func _pointer ():
 				else:
 					control.do(Globals.PlayerActions.CANCEL)
 		if Input.is_action_just_pressed("cancel"):
-			control.do(Globals.PlayerActions.DELETE, { 
-				"pos": colliding_node.transform.origin, 
-				"rot": colliding_node.transform.basis.get_rotation_quat() })
+			if colliding:
+				control.do(Globals.PlayerActions.DELETE, { 
+					"pos": colliding_node.transform.origin, 
+					"rot": colliding_node.transform.basis.get_rotation_quat() })

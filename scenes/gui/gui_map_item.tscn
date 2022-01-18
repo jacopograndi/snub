@@ -1,0 +1,43 @@
+[gd_scene format=2]
+
+[node name="gui_map_item" type="Panel"]
+margin_right = 200.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 0, 25 )
+
+[node name="name" type="Label" parent="."]
+margin_right = 62.4
+margin_bottom = 24.4
+text = "name map"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="hbox" type="HBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 1.0
+margin_bottom = -1.0
+custom_constants/separation = 5
+alignment = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="delete" type="Button" parent="hbox"]
+margin_left = 117.0
+margin_right = 163.0
+margin_bottom = 23.0
+text = "delete"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="load" type="Button" parent="hbox"]
+margin_left = 168.0
+margin_right = 200.0
+margin_bottom = 23.0
+text = "load"
+__meta__ = {
+"_edit_use_anchors_": false
+}

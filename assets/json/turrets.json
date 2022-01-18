@@ -182,7 +182,6 @@
 		"damage": 2,
 		"turn_speed": 0.5,
 		"range": 6,
-		"upgrades": [ "plasma plastic" ],
 		"modules_max": 4,
 		"model_name": "plastic.glb",
 		"thumbnail_name": "plastic.png",

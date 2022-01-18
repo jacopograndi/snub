@@ -1,9 +1,13 @@
 extends Node
 
+var mapname = "map0.json"
+var mappath = "user://"
+
 var _world : VoxelMesh = null
 var _path_holder : Node = null
 var _attach_point_holder : Node = null
 
+var saveload : Node = null
 var _load_scenes : Node = null
 
 func _ready():
@@ -17,8 +21,9 @@ func fetch ():
 		_path_holder = root.get_node("path")
 	if _attach_point_holder == null: 
 		_attach_point_holder = root.get_node("attach")
+	if saveload == null: saveload = root.get_node("saveload")
 	if _load_scenes == null: 
-		_load_scenes = root.get_node("saveload").get_node("load_scenes")
+		_load_scenes = saveload.get_node("load_scenes")
 	
 func get_map_state ():
 	fetch()
@@ -90,14 +95,14 @@ func set_map_state (state):
 	
 func map_save():
 	var save_game = File.new()
-	save_game.open("user://map0.json", File.WRITE)
+	save_game.open(mappath+mapname, File.WRITE)
 	save_game.store_string(to_json(get_map_state()))
 	save_game.close()
 	print("saved")
 
 func map_load():
 	var save_game = File.new()
-	save_game.open("user://map0.json", File.READ)
+	save_game.open(mappath+mapname, File.READ)
 	var raw = save_game.get_as_text()
 	save_game.close()
 	
@@ -107,9 +112,17 @@ func map_load():
 	
 	_path_holder.refresh_path(false)
 	
+func map_delete (mapname : String):
+	var dir = Directory.new()
+	dir.remove(mappath+mapname)
+	
+func get_mapnames ():
+	return saveload.parse_dir(mappath, ".json")
+
 
 func _process(_delta):
 	if Input.is_action_just_released("save"):
 		map_save()
 	if Input.is_action_just_released("load"):
-		map_load()
+		#map_load()
+		pass

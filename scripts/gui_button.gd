@@ -1,3 +1,3 @@
 extends TextureButton
 
-var option : String
+var option : Dictionary

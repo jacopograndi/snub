@@ -33,7 +33,7 @@ func build (options : Array = []):
 	_options = options
 	for opt in _options:
 		var button = _gui_button.instance()
-		button.option = opt.name
+		button.option = opt
 		
 		if opt.type == "turret buy":
 			var tinfo = load_turrets.info[opt.name]
@@ -60,11 +60,11 @@ func build (options : Array = []):
 func refresh ():
 	_fetch()
 	
-func _on_gui_turret_mouse_entered(option : String):
-	hovering = option;
+func _on_gui_turret_mouse_entered(option : Dictionary):
+	hovering = option.name;
 	
-func _on_gui_turret_mouse_exited(option : String):
+func _on_gui_turret_mouse_exited(option : Dictionary):
 	hovering = ""
 	
-func _on_gui_turret_pressed(option : String):
-	gui.control.do(Globals.PlayerActions.PICK, { "selected": option })
+func _on_gui_turret_pressed(option : Dictionary):
+	gui.control.do(Globals.PlayerActions.PICK, option)
