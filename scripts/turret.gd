@@ -15,6 +15,7 @@ var aim_mode = "first"
 var _target = null
 
 var projectile : PackedScene
+var ray : PackedScene
 
 var info : Dictionary
 
@@ -28,6 +29,7 @@ func _ready():
 	_enemies_holder = root.find_node("enemies")
 	
 	projectile = load("res://scenes/projectiles/bullet.tscn")
+	ray = load("res://scenes/projectiles/ray.tscn")
 	
 func refresh_normal ():
 	_normal = transform.basis * Vector3.UP
@@ -165,7 +167,7 @@ func shoot_bullet (dir : Basis, bounce = false):
 func shoot_ray (dir : Basis):
 	var space: PhysicsDirectSpaceState = get_world().direct_space_state
 	var from = _shooting_point
-	var to = _shooting_point - dir.z*info.range;
+	var to = _shooting_point - dir.z*info.range
 	var mask = 0b1101
 	
 	var result = space.intersect_ray(from, to, _path.nodes, mask)
@@ -174,3 +176,13 @@ func shoot_ray (dir : Basis):
 		var groups = parent.get_groups()
 		if "enemies" in groups:
 			_enemies_holder.damage(parent.name, info.damage)
+			
+			var distance = result.position.distance_to(from)
+			
+			var instance = ray.instance()
+			instance.ignore_collisions = true
+			_projectiles_holder.add_child(instance)
+			instance.transform.origin = _shooting_point - dir.z*0.3;
+			instance.transform.basis = dir
+			instance.transform.basis.z *= distance
+			instance.time_life = 0.05

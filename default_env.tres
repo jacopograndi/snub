@@ -7,13 +7,14 @@ radiance_size = 4
 panorama = ExtResource( 1 )
 
 [resource]
-background_mode = 2
+background_mode = 1
 background_sky = SubResource( 1 )
+background_color = Color( 0, 0, 0, 0 )
 ambient_light_color = Color( 1, 1, 1, 1 )
 ambient_light_energy = 0.1
 ambient_light_sky_contribution = 0.0
 auto_exposure_speed = 21.0
-ssao_radius = 0.2
+ssao_enabled = true
 ssao_quality = 2
 glow_intensity = 0.1
 adjustment_enabled = true

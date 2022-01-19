@@ -3,7 +3,7 @@ extends Spatial
 var _enemies_holder
 var shooter
 
-var damage = 1
+var damage = 0
 
 var timer = 0
 var time_life = 3
@@ -12,11 +12,21 @@ var hit_something = false
 var bounce = false
 var hitlist = []
 
+var ignore_collisions = false
+
 func _ready():
+	if ignore_collisions: return
 	_enemies_holder = get_tree().root.get_node("world").find_node("enemies")
 	var _err = $Area.connect("body_entered", self, "collided")
 
 func _physics_process(delta):
+	timer += delta
+	if timer >= time_life:
+		queue_free()
+		return
+		
+	if ignore_collisions: return
+	
 	var forward_dir = -global_transform.basis.z.normalized()
 	if bounce:
 		var space: PhysicsDirectSpaceState = get_world().direct_space_state
@@ -42,12 +52,9 @@ func _physics_process(delta):
 	else:
 		global_translate(forward_dir * speed * delta)
 		
-	
-	timer += delta
-	if timer >= time_life:
-		queue_free()
 
 func collided(body):
+	if ignore_collisions: return
 	var parent = body.get_parent()
 	if parent == shooter: return
 	if parent in hitlist: return
