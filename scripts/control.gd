@@ -88,8 +88,8 @@ func build_option (st, sttype):
 	
 func buy (pos, rot, turr_name):
 	var info = load_turrets.info[turr_name]
-	if resources.greater_than(info.cost):
-		resources.sub(info.cost)
+	if ineditor or resources.greater_than(info.cost):
+		if !ineditor: resources.sub(info.cost)
 		var obj = placer.inst_turret(pos, rot, turr_name)
 		editing_turret = obj.name
 		state = Globals.PlayerState.EDIT
@@ -100,8 +100,8 @@ func buy (pos, rot, turr_name):
 		
 func upgrade (turr_inst_name, upg_name):
 	var info = load_turrets.info[upg_name]
-	if resources.greater_than(info.cost):
-		resources.sub(info.cost)
+	if ineditor or resources.greater_than(info.cost):
+		if !ineditor: resources.sub(info.cost)
 		var prv = turret_holder.get_node(turr_inst_name)
 		var pos = prv.transform.origin
 		var rot = prv.transform.basis.get_rotation_quat()
@@ -253,6 +253,15 @@ func gui_start_wave_event ():
 	path.refresh_path(ineditor)
 	wave.start()
 	gui.refresh()
+	
+func end_wave_event ():
+	wave.end()
+	
+	for turr in turret_holder.get_children():
+		if turr.info.has("resource_per_wave"):
+			resources.add(turr.info.resource_per_wave)
+	
+	_refresh()
 	
 func gui_save_map_event (): saveload_map.map_save()
 

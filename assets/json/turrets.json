@@ -3,7 +3,6 @@
 		"name": "laser",
 		"cost": { "T": 100 },
 		"cooldown": 1.0,
-		"damage": 1,
 		"turn_speed": 3,
 		"range": 5,
 		"upgrades": [ "heavy laser", "sniper" ],
@@ -11,6 +10,7 @@
 		"model_name": "laser.glb",
 		"thumbnail_name": "laser.png",
 		"projectile": {
+			"damage": 1,
 			"type": "bullet",
 			"speed": 5,
 			"model_name": "laser_shot.glb",
@@ -21,7 +21,6 @@
 		"name": "heavy laser",
 		"cost": { "T": 250 },
 		"cooldown": 0.9,
-		"damage": 2,
 		"turn_speed": 3,
 		"range": 5,
 		"upgrades": [ "minigun" ],
@@ -29,6 +28,7 @@
 		"model_name": "laser.glb",
 		"thumbnail_name": "laser.png",
 		"projectile": {
+			"damage": 2,
 			"type": "bullet",
 			"speed": 5,
 			"model_name": "laser_shot.glb",
@@ -37,15 +37,15 @@
 	}, 
 	{
 		"name": "minigun",
-		"cost": { "T": 1000 },
+		"cost": { "T": 1000, "k": 1000 },
 		"cooldown": 0.2,
-		"damage": 2,
 		"turn_speed": 10,
 		"range": 5,
 		"modules_max": 6,
 		"model_name": "laser.glb",
 		"thumbnail_name": "laser.png",
 		"projectile": {
+			"damage": 2,
 			"type": "bullet",
 			"speed": 10,
 			"model_name": "laser_shot.glb",
@@ -56,7 +56,6 @@
 		"name": "sniper",
 		"cost": { "T": 300 },
 		"cooldown": 2,
-		"damage": 3,
 		"turn_speed": 1,
 		"range": 7,
 		"upgrades": [ "railgun" ],
@@ -64,6 +63,7 @@
 		"model_name": "sniper.glb",
 		"thumbnail_name": "sniper.png",
 		"projectile": {
+			"damage": 3,
 			"type": "ray",
 			"model_name": "ray_laser.glb",
 			"amount": 1
@@ -71,15 +71,15 @@
 	},
 	{
 		"name": "railgun",
-		"cost": { "T": 1200 },
+		"cost": { "T": 1200, "a": 1000 },
 		"cooldown": 5,
-		"damage": 10,
 		"turn_speed": 1,
 		"range": 8,
 		"modules_max": 4,
 		"model_name": "sniper.glb",
 		"thumbnail_name": "laser.png",
 		"projectile": {
+			"damage": 10,
 			"type": "ray",
 			"model_name": "ray_laser.glb",
 			"amount": 1
@@ -89,7 +89,6 @@
 		"name": "shotgun",
 		"cost": { "T": 250 },
 		"cooldown": 2.0,
-		"damage": 1,
 		"turn_speed": 1,
 		"range": 4,
 		"upgrades": [ "cannon" ],
@@ -97,6 +96,7 @@
 		"model_name": "shotgun.glb",
 		"thumbnail_name": "shotgun.png",
 		"projectile": {
+			"damage": 1,
 			"type": "bullet",
 			"speed": 5,
 			"model_name": "bullet_shot.glb",
@@ -108,32 +108,36 @@
 		"name": "cannon",
 		"cost": { "T": 400 },
 		"cooldown": 2.0,
-		"damage": 5,
 		"turn_speed": 1,
 		"range": 4,
-		"upgrades": [ "tesla" ],
+		"upgrades": [ "triple cannon" ],
 		"modules_max": 3,
 		"model_name": "shotgun.glb",
 		"thumbnail_name": "shotgun.png",
 		"projectile": {
-			"type": "bomb",
+			"damage": 5,
+			"type": "bullet",
+			"area_of_effect": 1,
 			"speed": 3,
 			"model_name": "bullet_shot.glb"
 		}
 	},
 	{
-		"name": "tesla",
-		"cost": { "T": 800 },
+		"name": "triple cannon",
+		"cost": { "T": 800, "d": 800 },
 		"cooldown": 1.0,
-		"damage": 2,
 		"turn_speed": 1,
 		"range": 4,
 		"modules_max": 5,
 		"model_name": "shotgun.glb",
 		"thumbnail_name": "shotgun.png",
 		"projectile": {
-			"type": "shock",
-			"jumps": 5,
+			"damage": 5,
+			"type": "bullet",
+			"area_of_effect": 1,
+			"spread": 45,
+			"speed": 3,
+			"amount": 3,
 			"model_name": "bullet_shot.glb"
 		}
 	},
@@ -141,7 +145,6 @@
 		"name": "plastic",
 		"cost": { "T": 400 },
 		"cooldown": 1.5,
-		"damage": 1,
 		"turn_speed": 0.5,
 		"range": 6,
 		"upgrades": [ "heavy plastic" ],
@@ -149,6 +152,7 @@
 		"model_name": "plastic.glb",
 		"thumbnail_name": "plastic.png",
 		"projectile": {
+			"damage": 1,
 			"type": "bounce",
 			"model_name": "bullet_bounce.glb",
 			"speed": 5,
@@ -160,7 +164,6 @@
 		"name": "heavy plastic",
 		"cost": { "T": 400 },
 		"cooldown": 1.5,
-		"damage": 2,
 		"turn_speed": 0.5,
 		"range": 6,
 		"upgrades": [ "plasma plastic" ],
@@ -168,6 +171,7 @@
 		"model_name": "plastic.glb",
 		"thumbnail_name": "plastic.png",
 		"projectile": {
+			"damage": 2,
 			"type": "bounce",
 			"model_name": "bullet_bounce.glb",
 			"speed": 7.5,
@@ -177,15 +181,15 @@
 	},
 	{
 		"name": "plasma plastic",
-		"cost": { "T": 800 },
+		"cost": { "T": 1500 },
 		"cooldown": 1,
-		"damage": 2,
 		"turn_speed": 0.5,
 		"range": 6,
 		"modules_max": 4,
 		"model_name": "plastic.glb",
 		"thumbnail_name": "plastic.png",
 		"projectile": {
+			"damage": 2,
 			"type": "bounce",
 			"lifetime": 5,
 			"model_name": "bullet_bounce.glb",
@@ -194,53 +198,57 @@
 		}
 	},
 	{
-		"name": "slower",
+		"name": "frost",
 		"cost": { "T": 350 },
 		"cooldown": 1,
 		"turn_speed": 5,
 		"range": 5,
-		"upgrades": [ "heavy slower", "stopper" ],
+		"upgrades": [ "heavy frost", "stopper" ],
 		"modules_max": 4,
-		"model_name": "slower.glb",
-		"thumbnail_name": "slower.png",
-		"slowness": 5,
+		"model_name": "frost.glb",
+		"thumbnail_name": "frost.png",
 		"projectile": {
 			"type": "bullet",
+			"slowness_time": 3,
+			"slowness_effect": 0.5,
 			"model_name": "bullet_slow.glb",
 			"speed": 10,
 			"amount": 1
 		}
 	},
 	{
-		"name": "heavy slower",
+		"name": "heavy frost",
 		"cost": { "T": 500 },
 		"cooldown": 0.7,
 		"turn_speed": 5,
 		"range": 6,
-		"upgrades": [ "final slower" ],
+		"upgrades": [ "blizzard" ],
 		"modules_max": 5,
-		"model_name": "slower.glb",
-		"thumbnail_name": "slower.png",
-		"slowness": 7,
+		"model_name": "frost.glb",
+		"thumbnail_name": "frost.png",
 		"projectile": {
 			"type": "bullet",
+			"slowness_time": 5,
+			"slowness_effect": 0.5,
 			"model_name": "bullet_slow.glb",
 			"speed": 10,
 			"amount": 1
 		}
 	},
 	{
-		"name": "final slower",
-		"cost": { "T": 1000 },
-		"cooldown": 2,
-		"turn_speed": 5,
+		"name": "blizzard",
+		"cost": { "T": 1000, "s": 3000 },
+		"cooldown": 0.5,
+		"turn_speed": 10,
 		"range": 7,
 		"modules_max": 5,
-		"model_name": "slower.glb",
-		"thumbnail_name": "slower.png",
+		"model_name": "frost.glb",
+		"thumbnail_name": "frost.png",
 		"slowness": 10,
 		"projectile": {
 			"type": "ray",
+			"slowness_time": 5,
+			"slowness_effect": 0.7,
 			"model_name": "ray_slow.glb",
 			"amount": 1
 		}
@@ -252,28 +260,35 @@
 		"range": 2,
 		"upgrades": [ "heavy stopper" ],
 		"modules_max": 4,
-		"model_name": "slower.glb",
-		"thumbnail_name": "slower.png",
-		"stop": 3,
+		"model_name": "frost.glb",
+		"thumbnail_name": "frost.png",
 		"projectile": {
-			"type": "area",
+			"type": "bullet",
+			"area_of_effect": 2,
+			"slowness_time": 1,
+			"slowness_effect": 1,
 			"model_name": "ray_slow.glb",
-			"amount": 1
+			"amount": 1,
+			"lifetime": 0
 		}
 	},
 	{
 		"name": "heavy stopper",
-		"cost": { "T": 1000 },
+		"cost": { "T": 1000, "s": 2000 },
 		"cooldown": 3,
 		"range": 3,
 		"modules_max": 5,
-		"model_name": "slower.glb",
-		"thumbnail_name": "slower.png",
-		"stop": 5,
+		"model_name": "frost.glb",
+		"thumbnail_name": "frost.png",
 		"projectile": {
-			"type": "area",
+			"type": "bullet",
+			"area_of_effect": 3,
+			"slowness_time": 2,
+			"slowness_effect": 1,
 			"model_name": "ray_slow.glb",
-			"amount": 1
+			"amount": 1,
+			"lifetime": 0,
+			"damage": 5
 		}
 	},
 	{
@@ -287,7 +302,7 @@
 	},
 	{
 		"name": "kad generator",
-		"cost": { "T": 400 },
+		"cost": { "k": 400, "a": 400, "d": 400 },
 		"resource_per_wave": { "k": 30, "a": 30, "d": 30 },
 		"upgrades": [ "s generator" ],
 		"max_modules": 2,
@@ -296,8 +311,8 @@
 	},
 	{
 		"name": "s generator",
-		"cost": { "T": 800 },
-		"resource_per_wave": { "s": 30 },
+		"cost": { "s": 2000 },
+		"resource_per_wave": { "s": 100 },
 		"max_modules": 3,
 		"model_name": "finance.glb",
 		"thumbnail_name": "finance.png"

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/slower.png-564311ab0a6b2d42a68471a253272d1a.stex"
+path="res://.import/frost.png-98680390741fd56be15b564785e45f35.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/textures/thumbnails/turrets/slower.png"
-dest_files=[ "res://.import/slower.png-564311ab0a6b2d42a68471a253272d1a.stex" ]
+source_file="res://assets/textures/thumbnails/turrets/frost.png"
+dest_files=[ "res://.import/frost.png-98680390741fd56be15b564785e45f35.stex" ]
 
 [params]
 

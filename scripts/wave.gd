@@ -91,4 +91,3 @@ func start():
 func end():
 	ongoing = false
 	wave_num += 1
-	gui.refresh()

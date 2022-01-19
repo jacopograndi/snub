@@ -11,6 +11,7 @@ stats:
 - turn speed: 5
 - range: 7
 - max modules: 5
-- slowness: 15 (seconds)
 - projectile:
 	- type: ray
+    - slowness time: 5 (seconds)
+    - slowness effect: 0.7

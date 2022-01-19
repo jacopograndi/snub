@@ -2,6 +2,7 @@ extends Spatial
 
 var _path : Node
 var _enemies : Node
+var _fx_holder : Node
 var _projectiles_holder : Node
 var _enemies_holder : Node
 
@@ -27,6 +28,7 @@ func _ready():
 	_enemies = root.get_node("enemies")
 	_projectiles_holder = root.get_node("projectiles")
 	_enemies_holder = root.find_node("enemies")
+	_fx_holder = root.find_node("fx")
 	
 	projectile = load("res://scenes/projectiles/bullet.tscn")
 	ray = load("res://scenes/projectiles/ray.tscn")
@@ -81,7 +83,7 @@ func get_target():
 	else: return null
 
 func _physics_process(delta):
-	if !info.has("damage"): return 
+	if !info.has("projectile"): return 
 	
 	if !_enemies.enemies.has(_target):
 		_target = null
@@ -93,6 +95,8 @@ func _physics_process(delta):
 		_target = get_target()
 	
 	_target = get_target()
+	
+	var turn_speed = info.get("turn_speed", 0)
 		
 	if _target != null:
 		var enemy = _enemies.node_from_id(_target)
@@ -112,14 +116,14 @@ func _physics_process(delta):
 		var base_basis = base.global_transform.basis.get_rotation_quat()
 		var base_angle = base_basis.angle_to(base_rot)
 		if base_angle > 0.01:
-			var base_amt = (info.turn_speed * delta) / base_angle
+			var base_amt = (turn_speed * delta) / base_angle
 			base_amt = min(1, base_amt)
 			base.global_transform.basis = Basis(base_basis.slerp(Basis(base_rot), base_amt))
 			
 		var gun_basis = gun.transform.basis.get_rotation_quat()
 		var gun_angle = gun_basis.angle_to(gun_rot)
 		if gun_angle > 0.01:
-			var gun_amt = (info.turn_speed * delta) / gun_angle
+			var gun_amt = (turn_speed * delta) / gun_angle
 			gun_amt = min(1, gun_amt)
 			gun.transform.basis = Basis(gun_basis.slerp(Basis(gun_rot), gun_amt))
 		
@@ -142,7 +146,7 @@ func spread (amt : int) -> Array:
 	return dirs
 
 func shoot ():
-	if info.projectile.amount > 1:
+	if info.projectile.get("amount", 1) > 1:
 		for dir in spread(info.projectile.amount):
 			shoot_switch(dir)
 	else:
@@ -160,9 +164,13 @@ func shoot_bullet (dir : Basis, bounce = false):
 	instance.transform.basis = dir
 	instance.transform.origin = _shooting_point - dir.z*0.3;
 	instance.shooter = self
-	instance.damage = info.damage
-	instance.speed = info.projectile.speed
+	instance.damage = info.projectile.get("damage", 0)
+	instance.speed = info.projectile.get("speed", 0)
 	instance.bounce = bounce
+	instance.aoe = info.projectile.get("area_of_effect", 0)
+	instance.slowness_effect = info.projectile.get("slowness_effect", 0)
+	instance.slowness_time = info.projectile.get("slowness_time", 0)
+	instance.time_life = info.projectile.get("lifetime", 3)
 
 func shoot_ray (dir : Basis):
 	var space: PhysicsDirectSpaceState = get_world().direct_space_state
@@ -175,14 +183,17 @@ func shoot_ray (dir : Basis):
 		var parent = result.collider.get_parent()
 		var groups = parent.get_groups()
 		if "enemies" in groups:
-			_enemies_holder.damage(parent.name, info.damage)
+			var dam = info.projectile.get("damage", 0)
+			var eff = info.projectile.get("slowness_effect", 0)
+			var tim = info.projectile.get("slowness_time", 0)
+			_enemies_holder.damage(parent.name, dam, eff, tim)
 			
 			var distance = result.position.distance_to(from)
 			
 			var instance = ray.instance()
-			instance.ignore_collisions = true
-			_projectiles_holder.add_child(instance)
+			_fx_holder.add_child(instance)
 			instance.transform.origin = _shooting_point - dir.z*0.3;
 			instance.transform.basis = dir
 			instance.transform.basis.z *= distance
 			instance.time_life = 0.05
+			

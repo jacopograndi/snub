@@ -18,7 +18,8 @@ stats:
 - turn speed: 5
 - range: 5
 - max modules: 4
-- slowness: 10 (seconds)
 - projectile:
+	- slowness time: 3 (seconds)
+	- slowness effect: 0.5 (half speed)
 	- type: bullet
 	- speed: 10

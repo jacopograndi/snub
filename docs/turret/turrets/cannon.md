@@ -17,5 +17,6 @@ stats:
 - max modules: 3
 - projectile:
 	- type: splash
+	- area of effect: 1
 	- speed: 3
 

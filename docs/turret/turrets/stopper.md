@@ -13,6 +13,9 @@ stats:
 - cooldown: 5
 - range: 2
 - max modules: 4
-- stop: 3 (seconds)
 - projectile:
 	- type: area
+	- area of effect: 2
+    - slowness time: 1 (seconds)
+    - slowness effect: 1
+

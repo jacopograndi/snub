@@ -12,8 +12,11 @@ func get_names(): return "Tkads"
 
 func dict_to_str (cost):
 	var st = ""
+	var i = 0
 	for n in cost.keys():
-		st += str(cost[n]) + n 
+		st += str(cost[n]) + n
+		if i <= cost.keys().size()-2: st += " "
+		i += 1
 	return st
 	
 func add (cost):

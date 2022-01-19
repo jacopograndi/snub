@@ -52,11 +52,13 @@ func build (options : Array = []):
 		if opt.type == "turret buy":
 			var tinfo = load_turrets.info[opt.name]
 			button.get_node("name").text = tinfo.name
+			button.get_node("panel_cash").visible = true
 			button.get_node("cash").text = resources.dict_to_str(tinfo.cost)
 			button.get_node("texture").texture = load_turrets.thumbnails[tinfo.thumbnail_name]
 		if opt.type == "turret upg":
 			var tinfo = load_turrets.info[opt.name]
 			button.get_node("name").text = tinfo.name
+			button.get_node("panel_cash").visible = true
 			button.get_node("cash").text = resources.dict_to_str(tinfo.cost)
 			button.get_node("texture").texture = load_turrets.thumbnails[tinfo.thumbnail_name]
 			tback.texture = thumbs_generic["upgrade.svg"]

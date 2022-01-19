@@ -7,7 +7,7 @@ var _enemy_blue
 var _dissolve_mat : ShaderMaterial
 var _enemy_mat : Material
 
-var wave
+var control
 var _fx_holder
 var _fx_enemy_damage
 
@@ -33,7 +33,7 @@ var colors = [
 func _ready():
 	var root = get_tree().root.get_node("world")
 	_fx_holder = root.get_node("fx")
-	wave = root.get_node("wave")
+	control = root.get_node("player").get_node("control")
 	_path = root.get_node("path")
 	_resources = root.get_node("player").get_node("resources")
 	_dissolve_mat = load("res://shaders/dissolve_mat.tres")
@@ -61,8 +61,8 @@ func spawn(name, node_cur=0, rel_pos=0):
 	enemies[serial_enemy] = { 
 		"name": name, 
 		"hp": info.lives, 
-		"slowed_effect": 0, 
-		"slowed_time": 0, 
+		"slow_effect": 0, 
+		"slow_time": 0, 
 		"cur": node_cur, 
 		"rel": rel_pos, 
 		"axis": [axis.x, axis.y, axis.z] 
@@ -93,8 +93,11 @@ func _physics_process(delta):
 				# todo rel +- epslion
 				spawn(info.spawn_on_death, enemy.cur, enemy.rel - n/10)
 			continue
+		
+		enemy.slow_time -= delta
+		if enemy.slow_time < 0: enemy.slow_effect = 0
 			
-		var speed = info.speed
+		var speed = info.speed * (1-enemy.slow_effect)
 		enemy.rel += speed * delta
 		while enemy.rel > 1: 
 			enemy.rel -= 1
@@ -120,18 +123,22 @@ func _physics_process(delta):
 		enemies.erase(id)
 		
 		if enemies.size() == 0:
-			wave.end()
+			control.end_wave_event()
 
 
-func damage(name, amt):
+func damage(name, dam, slow_effect=0, slow_time=0):
 	var id = int(name)
 	var enemy = enemies[id]
 	var info = load_shapes.info[enemy.name]
 	
 	if enemy.hp > 0:
-		enemy.hp -= amt
-		_resources.add({ info.resource: amt })
-		fx_damage(name)
+		if dam > 0:
+			enemy.hp -= dam
+			_resources.add({ info.resource: dam })
+			fx_damage(name)
+		if slow_effect > 0:
+			enemy.slow_effect = max(slow_effect, enemy.slow_effect)
+			enemy.slow_time = slow_time
 	
 func fx_damage(name):
 	var id = int(name)

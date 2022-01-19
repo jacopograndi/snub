@@ -132,7 +132,7 @@ func inst_path (pos, rot):
 	instance.transform.origin = pos + normal * 0.25;
 	instance.transform.basis = Basis(rot);
 	instance.set_name("path")
-	# remove collision depencency
+	# TODO multiplayer remove collision depencency
 	colliding_node.transform.basis = Basis(rot);
 	return instance
 	
