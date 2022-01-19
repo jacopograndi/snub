@@ -16,6 +16,6 @@ stats:
 - range: 4
 - max modules: 3
 - projectile:
-	- type: bomb
+	- type: splash
 	- speed: 3
 
