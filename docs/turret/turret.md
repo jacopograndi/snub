@@ -18,7 +18,7 @@ upgrade graph:
 	- heavy slower 
 		- final slower
 	- stopper 
-		- heavy stopper)
+		- heavy stopper
 - T generator 
 	- kad generator 
 		- s generator 
