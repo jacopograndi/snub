@@ -86,6 +86,34 @@ func build_option (st, sttype):
 					
 	gui.bottom_bar.picker.build(opts)
 	
+func buy (pos, rot, turr_name):
+	var info = load_turrets.info[turr_name]
+	if resources.greater_than(info.cost):
+		resources.sub(info.cost)
+		var obj = placer.inst_turret(pos, rot, turr_name)
+		editing_turret = obj.name
+		state = Globals.PlayerState.EDIT
+		build_option(state, statetype)
+	else:
+		pass
+		## TODO feedback
+		
+func upgrade (turr_inst_name, upg_name):
+	var info = load_turrets.info[upg_name]
+	if resources.greater_than(info.cost):
+		resources.sub(info.cost)
+		var prv = turret_holder.get_node(turr_inst_name)
+		var pos = prv.transform.origin
+		var rot = prv.transform.basis.get_rotation_quat()
+		placer.delete(statetype, pos, rot)
+		var obj = placer.inst_turret(pos, rot, upg_name)
+		editing_turret = obj.name
+		state = Globals.PlayerState.EDIT
+		build_option(state, statetype)
+	else:
+		pass
+		## TODO feedback
+	
 func sell (turr_name):
 	var turr = turret_holder.get_node(turr_name)
 	var info = turr.info
@@ -136,11 +164,7 @@ func do (action, par = {}):
 				Globals.PlayerActions.PLACE:
 					match statetype:
 						Globals.StateType.TURRET:
-							var obj = placer.inst_turret(
-								par.pos, par.rot, selected)
-							editing_turret = obj.name
-							state = Globals.PlayerState.EDIT
-							build_option(state, statetype)
+							buy(par.pos, par.rot, selected)
 						Globals.StateType.ATTACH:
 							placer.inst_attach(par.pos, par.rot)
 						Globals.StateType.PATH:
@@ -174,14 +198,7 @@ func do (action, par = {}):
 							selected = par.name
 							match par.type:
 								"turret upg":
-									var prv = turret_holder.get_node(editing_turret)
-									var pos = prv.transform.origin
-									var rot = prv.transform.basis.get_rotation_quat()
-									placer.delete(statetype, pos, rot)
-									var obj = placer.inst_turret(pos, rot, par.name)
-									editing_turret = obj.name
-									state = Globals.PlayerState.EDIT
-									build_option(state, statetype)
+									upgrade(editing_turret, par.name)
 								_ :
 									match par.name:
 										"targeting": 

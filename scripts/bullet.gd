@@ -63,4 +63,5 @@ func collided(body):
 		queue_free()
 	else:
 		hitlist.append(parent)
+		print(hitlist)
 

@@ -5,7 +5,10 @@ var _gui_button : Resource = load("res://scenes/gui/gui_button.tscn")
 
 var _options = []
 
+var thumbs_generic = {}
+
 var gui : Control
+var saveload : Node
 var load_turrets : Node
 var resources : Node
 
@@ -17,8 +20,18 @@ func _fetch ():
 	
 	var root = get_tree().root.get_node("world")
 	resources = root.get_node("player").get_node("resources")
-	load_turrets = root.get_node("saveload").get_node("load_turrets")
+	saveload = root.get_node("saveload")
+	load_turrets = saveload.get_node("load_turrets")
+	load_thumbnails()
 	if !load_turrets.loaded: yield(load_turrets, "done_loading")
+	
+
+func load_thumbnails():
+	var thumbspath = "res://assets/textures/thumbnails/generic"
+	thumbs_generic.clear()
+	var files = saveload.parse_dir(thumbspath, ".svg")
+	for turr in files:
+		thumbs_generic[turr] = load(thumbspath + "/" + turr)
 
 func build (options : Array = []):
 	_fetch()
@@ -34,6 +47,7 @@ func build (options : Array = []):
 	for opt in _options:
 		var button = _gui_button.instance()
 		button.option = opt
+		var tback = button.get_node("texture_back");
 		
 		if opt.type == "turret buy":
 			var tinfo = load_turrets.info[opt.name]
@@ -45,8 +59,14 @@ func build (options : Array = []):
 			button.get_node("name").text = tinfo.name
 			button.get_node("cash").text = resources.dict_to_str(tinfo.cost)
 			button.get_node("texture").texture = load_turrets.thumbnails[tinfo.thumbnail_name]
+			tback.texture = thumbs_generic["upgrade.svg"]
 		if opt.type == "text":
 			button.get_node("name").text = opt.name
+			if opt.name == "back": tback.texture = thumbs_generic["back.svg"]
+			if opt.name == "modules": tback.texture = thumbs_generic["modules.svg"]
+			if opt.name == "targeting": tback.texture = thumbs_generic["targeting.svg"]
+			if opt.name == "sell": tback.texture = thumbs_generic["sell.svg"]
+			tback.modulate = Color.white
 		if opt.type == "color":
 			button.get_node("name").text = ""
 			button.get_node("color").color = opt.color

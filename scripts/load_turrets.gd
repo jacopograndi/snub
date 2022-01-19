@@ -57,5 +57,4 @@ func load_thumbnails():
 	thumbnails.clear()
 	var files = saveload.parse_dir("res://assets/textures/thumbnails/turrets", ".png")
 	for turr in files:
-		print(turr)
 		thumbnails[turr] = load("res://assets/textures/thumbnails/turrets/" + turr)

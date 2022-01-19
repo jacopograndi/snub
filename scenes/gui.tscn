@@ -366,9 +366,9 @@ __meta__ = {
 }
 
 [node name="mapname" type="Label" parent="bottom_bar/editor_bar/hbox_map"]
-anchor_bottom = 1.0
 margin_left = 324.0
 margin_right = 379.4
+margin_bottom = 24.4
 text = "mapname"
 valign = 2
 script = SubResource( 8 )

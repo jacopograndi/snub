@@ -32,6 +32,15 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="texture_back" type="TextureRect" parent="."]
+modulate = Color( 1, 0.619608, 0, 1 )
+margin_right = 100.0
+margin_bottom = 100.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="texture" type="TextureRect" parent="."]
 margin_right = 100.0
 margin_bottom = 100.0
@@ -65,7 +74,7 @@ __meta__ = {
 anchor_right = 1.0
 margin_right = -2.0
 margin_bottom = 118.0
-align = 2
+align = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
