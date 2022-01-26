@@ -4,6 +4,7 @@ var saveload : Node
 
 var info : Dictionary
 var models : Dictionary
+var modules : Dictionary
 var thumbnails : Dictionary
 
 var loaded : bool = false
@@ -13,6 +14,7 @@ func _ready():
 	get_saveload()
 	load_models()
 	load_info()
+	load_modules()
 	load_thumbnails()
 	emit_signal("done_loading")
 	loaded = true
@@ -58,3 +60,13 @@ func load_thumbnails():
 	var files = saveload.parse_dir("res://assets/textures/thumbnails/turrets", ".png")
 	for turr in files:
 		thumbnails[turr] = load("res://assets/textures/thumbnails/turrets/" + turr)
+	
+func load_modules():
+	modules.clear()
+	var files = saveload.parse_dir("res://assets/json", ".json")
+	for f in files:
+		if f != "modules.json": continue
+		var parsed = saveload.load_parse_json("res://assets/json/" + f)
+		if parsed != null:
+			for tin in parsed:
+				modules[tin.name] = tin

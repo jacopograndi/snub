@@ -1,0 +1,155 @@
+[
+	{
+		"name": "cooldown",
+		"cost": { "k": 400 },
+		"mul": {
+			"cooldown": -0.05
+		}
+	}, 
+	{
+		"name": "turn speed",
+		"cost": { "k": 400 },
+		"mul": {
+			"turn_speed": -0.10
+		}
+	}, 
+	{
+		"name": "projectile speed",
+		"cost": { "k": 200 },
+		"mul": {
+			"projectile": {
+				"speed": 0.10
+			}
+		}
+	}, 
+	{
+		"name": "double damage",
+		"cost": { "a": 500 },
+		"add": {
+			"on_new_hit_double_damage": 1
+		}
+	}, 
+	{
+		"name": "damage",
+		"cost": { "a": 1000 },
+		"add": {
+			"projectile": {
+				"damage": 1
+			}
+		}
+	},
+	{
+		"name": "range",
+		"cost": { "a": 500 },
+		"mul": {
+			"range": 0.15
+		}
+	},
+	{
+		"name": "range",
+		"cost": { "d": 800 },
+		"add": {
+			"on_kill_double_resources": 1
+		}
+	},
+	{
+		"name": "double shot",
+		"cost": { "d": 1000 },
+		"add": {
+			"on_kill_double_shot": 1
+		}
+	},
+	{
+		"name": "slowness",
+		"cost": { "s": 300 },
+		"mul": {
+			"slowness_time": 0.20
+		}
+	},
+	{
+		"name": "armorbreaker",
+		"cost": { "s": 1000 },
+		"add": {
+			"if_half_lives_add_damage": 1
+		}
+	},
+	{
+		"name": "catalyst",
+		"cost": { "T": 200 },
+		"add": {
+			"resources_per_wave": { "T": 5 }
+		}
+	},
+	{
+		"name": "targeting",
+		"cost": { "T": 100 },
+		"add": {
+			"advanced_targeting": 1
+		}
+	},
+	{
+		"name": "heavy plastic",
+		"cost": { "T": 400 },
+		"cooldown": 1.5,
+		"turn_speed": 0.5,
+		"range": 6,
+		"upgrades": [ "plasma plastic" ],
+		"modules_max": 3,
+		"model_name": "plastic.glb",
+		"thumbnail_name": "plastic.png",
+		"projectile": {
+			"damage": 2,
+			"type": "bounce",
+			"model_name": "bullet_bounce.glb",
+			"speed": 7.5,
+			"max bounces": 4,
+			"amount": 1
+		}
+	},
+	{
+		"name": "blizzard",
+		"cost": { "T": 1000, "s": 3000 },
+		"cooldown": 0.5,
+		"turn_speed": 10,
+		"range": 7,
+		"modules_max": 5,
+		"model_name": "frost.glb",
+		"thumbnail_name": "frost.png",
+		"slowness": 10,
+		"projectile": {
+			"type": "ray",
+			"slowness_time": 5,
+			"slowness_effect": 0.7,
+			"model_name": "ray_slow.glb",
+			"amount": 1
+		}
+	},
+	{
+		"name": "heavy stopper",
+		"cost": { "T": 1000, "s": 2000 },
+		"cooldown": 3,
+		"range": 3,
+		"modules_max": 5,
+		"model_name": "frost.glb",
+		"thumbnail_name": "frost.png",
+		"projectile": {
+			"type": "bullet",
+			"area_of_effect": 3,
+			"slowness_time": 2,
+			"slowness_effect": 1,
+			"model_name": "ray_slow.glb",
+			"amount": 1,
+			"lifetime": 0,
+			"damage": 5
+		}
+	},
+	{
+		"name": "T generator",
+		"cost": { "T": 800 },
+		"resource_per_wave": { "T": 100 },
+		"upgrades": [ "kad generator" ],
+		"max_modules": 2,
+		"model_name": "finance.glb",
+		"thumbnail_name": "finance.png"
+	},
+]

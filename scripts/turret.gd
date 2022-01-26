@@ -5,6 +5,7 @@ var _enemies : Node
 var _fx_holder : Node
 var _projectiles_holder : Node
 var _enemies_holder : Node
+var load_turrets : Node
 
 var pivot : Spatial
 var base : Spatial
@@ -15,12 +16,73 @@ var _normal : Vector3
 var aim_mode = "first"
 var _target = null
 
+var cooldown_timer = 0
+
 var projectile : PackedScene
 var ray : PackedScene
 
 var info : Dictionary
+var info_mod : Dictionary
 
-var cooldown_timer = 0
+var mods = ["damage", "double damage", "cooldown"]
+
+func make_info_mod ():
+	info_mod.clear()
+	var add_eff = {}
+	var mul_eff = {}
+	for k in info:
+		if info[k] is Dictionary:
+			info_mod[k] = {}
+			add_eff[k] = {}
+			mul_eff[k] = {}
+			for kk in info[k]:
+				info_mod[k][kk] = info[k][kk]
+		else:
+			info_mod[k] = info[k]
+		
+	for m in mods:
+		var mod = load_turrets.modules[m]
+		
+		for eff in mod.get("add", {}):
+			if mod.add[eff] is Dictionary:
+				for kk in mod.add[eff]:
+					if not eff in add_eff[eff]: add_eff[eff][kk] = 0
+					add_eff[eff][kk] += mod.add[eff][kk]
+			else:
+				if not eff in add_eff: add_eff[eff] = 0
+				add_eff[eff] += mod.add[eff]
+				
+		for eff in mod.get("mul", {}):
+			if mod.mul[eff] is Dictionary:
+				for kk in mod.mul[eff]:
+					if not eff in mul_eff[eff]: mul_eff[eff][kk] = 0
+					mul_eff[eff][kk] *= mod.mul[eff][kk]
+			else:
+				if not eff in mul_eff: mul_eff[eff] = 0
+				mul_eff[eff] *= mod.mul[eff]
+			
+	for k in add_eff:
+		if add_eff[k] is Dictionary:
+			for kk in add_eff[k]:
+				if not kk in info_mod[k]: info_mod[k][kk] = 0
+				info_mod[k][kk] += add_eff[k][kk]
+		else:
+			if not k in info_mod: info_mod[k] = 0
+			info_mod[k] += add_eff[k]
+			
+	for k in mul_eff:
+		if mul_eff[k] is Dictionary:
+			for kk in mul_eff[k]:
+				if not kk in info_mod[k]: info_mod[k][kk] = 0
+				info_mod[k][kk] *= 1 + mul_eff[k][kk]
+		else:
+			if not k in info_mod: info_mod[k] = 0
+			info_mod[k] *= 1 + mul_eff[k]
+	
+	print(add_eff)
+	print(mul_eff)
+	print(info)
+	print(info_mod)
 
 func _ready():
 	var root = get_tree().root.get_node("world")
@@ -29,6 +91,9 @@ func _ready():
 	_projectiles_holder = root.get_node("projectiles")
 	_enemies_holder = root.find_node("enemies")
 	_fx_holder = root.find_node("fx")
+	
+	load_turrets = root.get_node("saveload").get_node("load_turrets")
+	if !load_turrets.loaded: yield(load_turrets, "done_loading")
 	
 	projectile = load("res://scenes/projectiles/bullet.tscn")
 	ray = load("res://scenes/projectiles/ray.tscn")
@@ -45,13 +110,14 @@ func refresh_model():
 		
 func refresh_info(tinfo):
 	self.info = tinfo
+	make_info_mod()
 	
 func filter_in_range(set):
 	var filtered = []
 	for target in set:
 		var node = _enemies.node_from_id(target)
 		var dist = (node.transform.origin - _shooting_point).length_squared()
-		if dist < info.range*info.range:
+		if dist < info_mod.range*info_mod.range:
 			filtered += [target]
 	return filtered
 	
@@ -83,7 +149,7 @@ func get_target():
 	else: return null
 
 func _physics_process(delta):
-	if !info.has("projectile"): return 
+	if !info_mod.has("projectile"): return 
 	
 	if !_enemies.enemies.has(_target):
 		_target = null
@@ -96,7 +162,7 @@ func _physics_process(delta):
 	
 	_target = get_target()
 	
-	var turn_speed = info.get("turn_speed", 0)
+	var turn_speed = info_mod.get("turn_speed", 0)
 		
 	if _target != null:
 		var enemy = _enemies.node_from_id(_target)
@@ -128,8 +194,8 @@ func _physics_process(delta):
 			gun.transform.basis = Basis(gun_basis.slerp(Basis(gun_rot), gun_amt))
 		
 		cooldown_timer += delta
-		if cooldown_timer > info.cooldown:
-			cooldown_timer -= info.cooldown
+		if cooldown_timer > info_mod.cooldown:
+			cooldown_timer -= info_mod.cooldown
 			shoot()
 			
 func spread (amt : int) -> Array:
@@ -139,21 +205,21 @@ func spread (amt : int) -> Array:
 		var dir = gun.global_transform.basis
 		var x = floor(i%width)-width/2+(width+1)%2*0.5
 		var y = floor(i/width)-floor(sqrt(amt)-1)/2
-		var spread = info.projectile.spread
+		var spread = info_mod.projectile.spread
 		dir = dir.rotated(_normal, deg2rad(x*spread))
 		dir = dir.rotated(_normal.cross(dir.z).normalized(), deg2rad(y*spread))
 		dirs.append(dir)
 	return dirs
 
 func shoot ():
-	if info.projectile.get("amount", 1) > 1:
-		for dir in spread(info.projectile.amount):
+	if info_mod.projectile.get("amount", 1) > 1:
+		for dir in spread(info_mod.projectile.amount):
 			shoot_switch(dir)
 	else:
 		shoot_switch(gun.global_transform.basis)
 			
 func shoot_switch (dir : Basis):
-	match info.projectile.type:
+	match info_mod.projectile.type:
 		"bullet": shoot_bullet(dir)
 		"ray": shoot_ray(dir)
 		"bounce": shoot_bullet(dir, true)
@@ -164,18 +230,18 @@ func shoot_bullet (dir : Basis, bounce = false):
 	instance.transform.basis = dir
 	instance.transform.origin = _shooting_point - dir.z*0.3;
 	instance.shooter = self
-	instance.damage = info.projectile.get("damage", 0)
-	instance.speed = info.projectile.get("speed", 0)
+	instance.damage = info_mod.projectile.get("damage", 0)
+	instance.speed = info_mod.projectile.get("speed", 0)
 	instance.bounce = bounce
-	instance.aoe = info.projectile.get("area_of_effect", 0)
-	instance.slowness_effect = info.projectile.get("slowness_effect", 0)
-	instance.slowness_time = info.projectile.get("slowness_time", 0)
-	instance.time_life = info.projectile.get("lifetime", 3)
+	instance.aoe = info_mod.projectile.get("area_of_effect", 0)
+	instance.slowness_effect = info_mod.projectile.get("slowness_effect", 0)
+	instance.slowness_time = info_mod.projectile.get("slowness_time", 0)
+	instance.time_life = info_mod.projectile.get("lifetime", 3)
 
 func shoot_ray (dir : Basis):
 	var space: PhysicsDirectSpaceState = get_world().direct_space_state
 	var from = _shooting_point
-	var to = _shooting_point - dir.z*info.range
+	var to = _shooting_point - dir.z*info_mod.range
 	var mask = 0b1101
 	
 	var result = space.intersect_ray(from, to, _path.nodes, mask)
@@ -183,9 +249,9 @@ func shoot_ray (dir : Basis):
 		var parent = result.collider.get_parent()
 		var groups = parent.get_groups()
 		if "enemies" in groups:
-			var dam = info.projectile.get("damage", 0)
-			var eff = info.projectile.get("slowness_effect", 0)
-			var tim = info.projectile.get("slowness_time", 0)
+			var dam = info_mod.projectile.get("damage", 0)
+			var eff = info_mod.projectile.get("slowness_effect", 0)
+			var tim = info_mod.projectile.get("slowness_time", 0)
 			_enemies_holder.damage(parent.name, dam, eff, tim)
 			
 			var distance = result.position.distance_to(from)

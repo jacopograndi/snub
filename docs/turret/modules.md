@@ -20,10 +20,8 @@ Module list:
 	- double shot after killing an enemy
 - s
 	- slowness time +20%
-	- slowness effectiveness +10%
-		- _works both for slower and stopper_
 	- if enemy has >50% hp, +1 damage
 - T
-	- +1 resource production
+	- +5 resource production
 	- advanced targeting
 		- _unlocks more targeting options_
