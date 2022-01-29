@@ -24,65 +24,56 @@ var ray : PackedScene
 var info : Dictionary
 var info_mod : Dictionary
 
-var mods = ["damage", "double damage", "cooldown"]
+var mods = []
+
+func dict_get (d, keys : Array):
+	var val = d
+	if keys != [] and d != null: 
+		var key = keys.pop_front()
+		val = dict_get(d.get(key, null), keys)
+	return val
+	
+func complete (prev, chain):
+	for k in prev:
+		if prev[k] is Dictionary: 
+			complete(prev[k], chain + [k])
+		else:
+			for m in mods:
+				var mod = load_turrets.modules[m]
+				if not mod.has("add"): continue
+				var children = dict_get(mod, ["add"] + chain)
+				if children == null: continue
+				for h in children:
+					if children[h] is int or children[h] is float: 
+						if not prev.has(h): 
+							prev[h] = 0
+							break
+	
+func traverse (prev, next, chain):
+	for k in prev:
+		if prev[k] is Dictionary: 
+			if not next.has(k): next[k] = {}
+			traverse(prev[k], next[k], chain + [k])
+		else:
+			var add = 0
+			var mul = 0
+			for m in mods:
+				var mod = load_turrets.modules[m]
+				var x = dict_get(mod, ["add"] + chain + [k])
+				if x is int or x is float: add += x
+				var y = dict_get(mod, ["mul"] + chain + [k])
+				if y is int or y is float: mul += y
+			if prev[k] is int or prev[k] is float: 
+				next[k] = prev[k] + add
+				next[k] = next[k] * (1+mul)
+			else: next[k] = prev[k]
 
 func make_info_mod ():
 	info_mod.clear()
-	var add_eff = {}
-	var mul_eff = {}
-	for k in info:
-		if info[k] is Dictionary:
-			info_mod[k] = {}
-			add_eff[k] = {}
-			mul_eff[k] = {}
-			for kk in info[k]:
-				info_mod[k][kk] = info[k][kk]
-		else:
-			info_mod[k] = info[k]
-		
-	for m in mods:
-		var mod = load_turrets.modules[m]
-		
-		for eff in mod.get("add", {}):
-			if mod.add[eff] is Dictionary:
-				for kk in mod.add[eff]:
-					if not eff in add_eff[eff]: add_eff[eff][kk] = 0
-					add_eff[eff][kk] += mod.add[eff][kk]
-			else:
-				if not eff in add_eff: add_eff[eff] = 0
-				add_eff[eff] += mod.add[eff]
-				
-		for eff in mod.get("mul", {}):
-			if mod.mul[eff] is Dictionary:
-				for kk in mod.mul[eff]:
-					if not eff in mul_eff[eff]: mul_eff[eff][kk] = 0
-					mul_eff[eff][kk] *= mod.mul[eff][kk]
-			else:
-				if not eff in mul_eff: mul_eff[eff] = 0
-				mul_eff[eff] *= mod.mul[eff]
-			
-	for k in add_eff:
-		if add_eff[k] is Dictionary:
-			for kk in add_eff[k]:
-				if not kk in info_mod[k]: info_mod[k][kk] = 0
-				info_mod[k][kk] += add_eff[k][kk]
-		else:
-			if not k in info_mod: info_mod[k] = 0
-			info_mod[k] += add_eff[k]
-			
-	for k in mul_eff:
-		if mul_eff[k] is Dictionary:
-			for kk in mul_eff[k]:
-				if not kk in info_mod[k]: info_mod[k][kk] = 0
-				info_mod[k][kk] *= 1 + mul_eff[k][kk]
-		else:
-			if not k in info_mod: info_mod[k] = 0
-			info_mod[k] *= 1 + mul_eff[k]
+	complete(info, [])
+	traverse(info, info_mod, []) 
 	
-	print(add_eff)
-	print(mul_eff)
-	print(info)
-	print(info_mod)
+	print(info, info_mod)
 
 func _ready():
 	var root = get_tree().root.get_node("world")

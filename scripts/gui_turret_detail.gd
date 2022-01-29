@@ -61,7 +61,9 @@ func _process(delta):
 		
 	var highlight = null
 	if gui.control.state == Globals.PlayerState.EDIT and \
-			gui.control.statetype == Globals.StateType.TURRET:
+			(gui.control.statetype == Globals.StateType.TURRET or \
+			gui.control.statetype == Globals.StateType.MODULES or \
+			gui.control.statetype == Globals.StateType.MODULES_PICK):
 		var turret_name = gui.control.editing_turret
 		highlight = _turret_holder.get_node(turret_name)
 		
@@ -72,7 +74,7 @@ func _process(delta):
 		placing = gui.control.selected
 		
 	if highlight != null:
-		info = highlight.info
+		info = highlight.info_mod
 	elif placing != null:
 		info = load_turrets.info[placing]
 	elif hovering != null:

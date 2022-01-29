@@ -46,7 +46,7 @@
 		}
 	},
 	{
-		"name": "range",
+		"name": "double resources",
 		"cost": { "d": 800 },
 		"add": {
 			"on_kill_double_resources": 1

@@ -82,6 +82,13 @@ func build_option (st, sttype):
 					opts += [ { "type": "text", "name": "back" } ]
 					
 				Globals.StateType.MODULES:
+					opts += [ { "type": "text", "name": "add" } ]
+					opts += [ { "type": "text", "name": "back" } ]
+					
+				Globals.StateType.MODULES_PICK:
+					for k in load_turrets.modules:
+						var mod = load_turrets.modules[k]
+						opts += [ { "type": "text", "name": mod.name } ]
 					opts += [ { "type": "text", "name": "back" } ]
 					
 	gui.bottom_bar.picker.build(opts)
@@ -222,8 +229,24 @@ func do (action, par = {}):
 						Globals.StateType.MODULES:
 							selected = par.name
 							match par.name:
+								"add": 
+									statetype = Globals.StateType.MODULES_PICK
+									build_option(state, statetype)
 								"back": 
 									statetype = Globals.StateType.TURRET
+									build_option(state, statetype)
+									
+						Globals.StateType.MODULES_PICK:
+							selected = par.name
+							match par.name:
+								"back": 
+									statetype = Globals.StateType.MODULES
+									build_option(state, statetype)
+								_: 
+									statetype = Globals.StateType.MODULES
+									var turr = turret_holder.get_node(editing_turret)
+									turr.mods += [par.name]
+									turr.make_info_mod()
 									build_option(state, statetype)
 								
 						_: to_pick() 

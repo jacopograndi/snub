@@ -14,6 +14,7 @@ enum StateType {
 	VOXEL_PALETTE
 	TARGETING
 	MODULES
+	MODULES_PICK
 }
 
 enum PlayerActions { 
