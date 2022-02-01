@@ -60,7 +60,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="hbox_upgs" type="VBoxContainer" parent="vbox/hbox_global"]
+[node name="hbox_cmp" type="VBoxContainer" parent="vbox/hbox_global"]
 margin_left = 6.0
 margin_right = 6.0
 custom_constants/separation = 0

@@ -81,7 +81,7 @@
 		}
 	},
 	{
-		"name": "targeting",
+		"name": "adv targeting",
 		"cost": { "T": 100 },
 		"add": {
 			"advanced_targeting": 1

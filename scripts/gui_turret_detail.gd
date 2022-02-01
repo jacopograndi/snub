@@ -33,29 +33,39 @@ func flatten (dict : Dictionary):
 		else: flat[k] = dict[k]
 	return flat
 
-func refresh (turret_info : Dictionary, upgraded : Dictionary = {}):
+func refresh (turret_info : Dictionary, comp : Dictionary = {}):
 	_fetch()
 	
 	get_node("vbox").get_node("name_label").text = "name: " + turret_info.name
 
 	var base_labels = hbox_global.get_node("hbox_labels")
 	var base_values = hbox_global.get_node("hbox_values")
+	var base_cmp = hbox_global.get_node("hbox_cmp")
 	for child in base_labels.get_children(): child.queue_free()
 	for child in base_values.get_children(): child.queue_free()
+	for child in base_cmp.get_children(): child.queue_free()
 	
 	var flat = flatten(turret_info)
+	var flat_comp = flatten(comp)
 	
 	var skip = ["upgrades"]
 	for k in flat:
 		if k in skip or "name" in k: continue
 		
-		var val = str(flat[k])
 		var label_lab = Label.new() 
 		label_lab.text = k
 		base_labels.add_child(label_lab)
+		
+		var val = str(flat[k])
 		var label_val = Label.new() 
 		label_val.text = val
 		base_values.add_child(label_val)
+		
+		var cmp_val = str(flat_comp.get(k, ""))
+		if (cmp_val == val): cmp_val = ""
+		var label_cmp = Label.new() 
+		label_cmp.text = cmp_val
+		base_cmp.add_child(label_cmp)
 
 func _process(delta):
 	_fetch()
@@ -85,6 +95,20 @@ func _process(delta):
 		
 	if highlight != null:
 		info = highlight.info_mod
+		
+		var opts = ["back", "targeting", "modules", "sell", "add"]
+		if gui.control.state == Globals.PlayerState.EDIT and \
+				gui.control.statetype == Globals.StateType.TURRET and \
+				gui.bottom_bar.picker.hovering != "" and \
+				not gui.bottom_bar.picker.hovering in opts:
+			comp = load_turrets.info[gui.bottom_bar.picker.hovering]
+			
+		elif gui.control.state == Globals.PlayerState.EDIT and \
+				gui.control.statetype == Globals.StateType.MODULES_PICK and \
+				gui.bottom_bar.picker.hovering != "" and \
+				not gui.bottom_bar.picker.hovering in opts:
+			comp = highlight.make_info_mod(highlight.modules + [gui.bottom_bar.picker.hovering])
+			
 	elif placing != null:
 		info = load_turrets.info[placing]
 	elif hovering != null:

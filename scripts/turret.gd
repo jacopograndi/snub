@@ -24,7 +24,7 @@ var ray : PackedScene
 var info : Dictionary
 var info_mod : Dictionary
 
-var mods = []
+var modules = []
 
 func dict_get (d, keys : Array):
 	var val = d
@@ -33,10 +33,10 @@ func dict_get (d, keys : Array):
 		val = dict_get(d.get(key, null), keys)
 	return val
 	
-func complete (prev, chain):
+func complete (prev, chain, mods):
 	for k in prev:
 		if prev[k] is Dictionary: 
-			complete(prev[k], chain + [k])
+			complete(prev[k], chain + [k], mods)
 		else:
 			for m in mods:
 				var mod = load_turrets.modules[m]
@@ -49,11 +49,11 @@ func complete (prev, chain):
 							prev[h] = 0
 							break
 	
-func traverse (prev, next, chain):
+func traverse (prev, next, chain, mods):
 	for k in prev:
 		if prev[k] is Dictionary: 
 			if not next.has(k): next[k] = {}
-			traverse(prev[k], next[k], chain + [k])
+			traverse(prev[k], next[k], chain + [k], mods)
 		else:
 			var add = 0
 			var mul = 0
@@ -68,12 +68,11 @@ func traverse (prev, next, chain):
 				next[k] = next[k] * (1+mul)
 			else: next[k] = prev[k]
 
-func make_info_mod ():
-	info_mod.clear()
-	complete(info, [])
-	traverse(info, info_mod, []) 
-	
-	print(info, info_mod)
+func make_info_mod (mods):
+	var modded = {}
+	complete(info, [], mods)
+	traverse(info, modded, [], mods) 
+	return modded
 
 func _ready():
 	var root = get_tree().root.get_node("world")
@@ -101,7 +100,7 @@ func refresh_model():
 		
 func refresh_info(tinfo):
 	self.info = tinfo
-	make_info_mod()
+	info_mod = make_info_mod(modules)
 	
 func filter_in_range(set):
 	var filtered = []

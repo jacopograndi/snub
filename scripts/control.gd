@@ -245,8 +245,8 @@ func do (action, par = {}):
 								_: 
 									statetype = Globals.StateType.MODULES
 									var turr = turret_holder.get_node(editing_turret)
-									turr.mods += [par.name]
-									turr.make_info_mod()
+									turr.modules += [par.name]
+									turr.refresh_info(turr.info)
 									build_option(state, statetype)
 								
 						_: to_pick() 
