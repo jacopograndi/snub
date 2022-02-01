@@ -79,6 +79,14 @@ func build_option (st, sttype):
 					opts += [ { "type": "text", "name": "back" } ]
 					
 				Globals.StateType.TARGETING:
+					opts += [ { "type": "text", "name": "first" } ]
+					opts += [ { "type": "text", "name": "last" } ]
+					opts += [ { "type": "text", "name": "strongest" } ]
+					opts += [ { "type": "text", "name": "weakest" } ]
+					opts += [ { "type": "text", "name": "closest" } ]
+					opts += [ { "type": "text", "name": "furthest" } ]
+					opts += [ { "type": "text", "name": "least turning" } ]
+					opts += [ { "type": "text", "name": "most turning" } ]
 					opts += [ { "type": "text", "name": "back" } ]
 					
 				Globals.StateType.MODULES:
@@ -224,6 +232,11 @@ func do (action, par = {}):
 							match par.name:
 								"back": 
 									statetype = Globals.StateType.TURRET
+									build_option(state, statetype)
+								_: 
+									statetype = Globals.StateType.TURRET
+									var turr = turret_holder.get_node(editing_turret)
+									turr.aim_mode = par.name
 									build_option(state, statetype)
 									
 						Globals.StateType.MODULES:

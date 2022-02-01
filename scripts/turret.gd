@@ -126,6 +126,39 @@ func filter_visible(set):
 			if hit == node:
 				filtered += [ target ]
 	return filtered
+	
+func targeting (set, aim):
+	var pick = set[0]
+	var pick_val = value(pick, aim)
+	for target in set:
+		var enemy = _enemies.enemies[target]
+		var d = value(target, aim)
+		if d > pick_val: 
+			pick_val = d
+			pick = target
+	return pick
+	
+func value(a, aim): 
+	var enemy = _enemies.enemies[a]
+	match aim:
+		"first": return enemy.cur+enemy.rel
+		"last": return - (enemy.cur+enemy.rel)
+		"strongest": return enemy.hp
+		"weakest": return -enemy.hp
+		"closest": 
+			var node = _enemies.node_from_id(a)
+			return - _shooting_point.distance_squared_to(node.transform.origin)
+		"furthest": 
+			var node = _enemies.node_from_id(a)
+			return _shooting_point.distance_squared_to(node.transform.origin)
+		"least turning": 
+			var node = _enemies.node_from_id(a)
+			return node.transform.basis.z.signed_angle_to(
+				gun.transform.basis.z, Vector3.UP)
+		"most turning": 
+			var node = _enemies.node_from_id(a)
+			return -node.transform.basis.z.signed_angle_to(
+				gun.transform.basis.z, Vector3.UP)
 
 func get_target():
 	var ids = []
@@ -135,7 +168,7 @@ func get_target():
 	set = filter_visible(set)
 	
 	if set.size() > 0:
-		return set[0]
+		return targeting(set, aim_mode)
 	else: return null
 
 func _physics_process(delta):
