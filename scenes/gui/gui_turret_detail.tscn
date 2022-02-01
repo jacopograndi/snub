@@ -1,148 +1,69 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://scripts/gui_turret_detail.gd" type="Script" id=1]
 [ext_resource path="res://themes/DarkTheme/Dark.theme" type="Theme" id=2]
-[ext_resource path="res://scenes/gui/gui_turret_values.tscn" type="PackedScene" id=3]
 
 [sub_resource type="StyleBoxFlat" id=1]
-bg_color = Color( 0.6, 0.6, 0.6, 0 )
+bg_color = Color( 0, 0, 0, 0.392157 )
+border_width_left = 1
+border_width_top = 1
 border_width_right = 1
-shadow_offset = Vector2( 1, 1 )
+border_width_bottom = 1
 
-[node name="gui_turret_detail" type="Panel"]
-margin_top = -125.0
-margin_right = 200.0
-margin_bottom = 125.0
+[node name="gui_turret_detail" type="PanelContainer"]
+margin_right = 64.0
+margin_bottom = 29.0
 grow_vertical = 2
-rect_min_size = Vector2( 200, 250 )
 size_flags_horizontal = 9
 theme = ExtResource( 2 )
+custom_styles/panel = SubResource( 1 )
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="name_label" type="Label" parent="."]
-anchor_right = 1.0
+[node name="vbox" type="VBoxContainer" parent="."]
+margin_left = 1.0
+margin_top = 1.0
+margin_right = 63.0
+margin_bottom = 28.0
+
+[node name="name_label" type="Label" parent="vbox"]
+margin_top = -1.0
+margin_right = 62.4
+margin_bottom = 23.4
 text = "turret: "
 valign = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="border" type="Panel" parent="."]
-anchor_right = 1.0
-anchor_bottom = 1.0
-mouse_filter = 2
-custom_styles/panel = SubResource( 1 )
+[node name="hbox_global" type="HBoxContainer" parent="vbox"]
+margin_top = 27.0
+margin_right = 62.0
+margin_bottom = 27.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="hbox_global" type="HBoxContainer" parent="."]
-anchor_bottom = 1.0
-margin_top = 25.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="hbox_labels" type="VBoxContainer" parent="hbox_global"]
-margin_right = 150.0
-margin_bottom = 225.0
-rect_min_size = Vector2( 150, 0 )
+[node name="hbox_labels" type="VBoxContainer" parent="vbox/hbox_global"]
 custom_constants/separation = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="damage" type="Label" parent="hbox_global/hbox_labels"]
-margin_top = -1.0
-margin_right = 150.0
-margin_bottom = 23.4
-text = "damage"
-valign = 1
+[node name="hbox_values" type="VBoxContainer" parent="vbox/hbox_global"]
+margin_left = 3.0
+margin_right = 3.0
+custom_constants/separation = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="range" type="Label" parent="hbox_global/hbox_labels"]
-margin_top = 23.0
-margin_right = 150.0
-margin_bottom = 47.4
-text = "range"
-valign = 1
+[node name="hbox_upgs" type="VBoxContainer" parent="vbox/hbox_global"]
+margin_left = 6.0
+margin_right = 6.0
+custom_constants/separation = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="turn speed" type="Label" parent="hbox_global/hbox_labels"]
-margin_top = 47.0
-margin_right = 150.0
-margin_bottom = 71.4
-text = "turn speed"
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="cooldown" type="Label" parent="hbox_global/hbox_labels"]
-margin_top = 71.0
-margin_right = 150.0
-margin_bottom = 95.4
-text = "cooldown"
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="projectile" type="Label" parent="hbox_global/hbox_labels"]
-margin_top = 95.0
-margin_right = 150.0
-margin_bottom = 119.4
-text = "projectile"
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="spread" type="Label" parent="hbox_global/hbox_labels"]
-margin_top = 119.0
-margin_right = 150.0
-margin_bottom = 143.4
-text = "spread"
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="projectile speed" type="Label" parent="hbox_global/hbox_labels"]
-margin_top = 143.0
-margin_right = 150.0
-margin_bottom = 167.4
-text = "projectile speed"
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="projectiles per shot" type="Label" parent="hbox_global/hbox_labels"]
-margin_top = 167.0
-margin_right = 150.0
-margin_bottom = 191.4
-text = "projectiles per shot"
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="modules" type="Label" parent="hbox_global/hbox_labels"]
-margin_top = 191.0
-margin_right = 150.0
-margin_bottom = 215.4
-text = "max modules"
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="hbox_values" parent="hbox_global" instance=ExtResource( 3 )]

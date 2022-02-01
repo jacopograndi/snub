@@ -1,9 +1,8 @@
-extends Panel
+extends PanelContainer
 
 var hbox_labels 
 var hbox_global
 var _turret_holder : Node
-var _turret_values : Resource = load("res://scenes/gui/gui_turret_values.tscn")
 var load_turrets : Node
 var resources : Node
 
@@ -16,8 +15,8 @@ func _fetch ():
 	var root = get_tree().root.get_node("world")
 	_turret_holder = root.get_node("turrets")
 	
-	hbox_labels = $"hbox_global/hbox_labels"
-	hbox_global = $"hbox_global"
+	hbox_labels = $"vbox/hbox_global/hbox_labels"
+	hbox_global = $"vbox/hbox_global"
 	
 	resources = root.get_node("player").get_node("resources")
 	
@@ -25,33 +24,44 @@ func _fetch ():
 	if !load_turrets.loaded: yield(load_turrets, "done_loading")
 	
 	
-func refresh (turret : Dictionary, upgraded : Dictionary = {}):
-	_fetch()
-	if upgraded == null: rect_min_size.x = 200
-	else: rect_min_size.x = 230
-	
-	get_node("name_label").text = "name: " + turret.name
-	
-	var dict = {
-		"damage": turret.get("damage", "-"),
-		"range": turret.get("range", "-"),
-		"turn speed": turret.get("turn_speed", "-"),
-		"cooldown": turret.get("cooldown", "-"),
-		"projectile": turret.get("projectile", {}).get("type", "-"),
-		"spread": turret.get("projectile", {}).get("spread", "-"),
-		"projectile speed": turret.get("projectile", {}).get("speed", "-"),
-		"projectiles per shot": turret.get("projectile", {}).get("amount", "-"),
-		"modules": turret.get("modules_max", "-"),
-	}
-
-	var base_values = hbox_global.get_node("hbox_values")
+func flatten (dict : Dictionary):
+	var flat = {}
 	for k in dict:
-		base_values.get_node(k).text = str(dict[k]);
+		if dict[k] is Dictionary:
+			for kk in dict[k]:
+				flat[k+" "+kk] = dict[k][kk]
+		else: flat[k] = dict[k]
+	return flat
+
+func refresh (turret_info : Dictionary, upgraded : Dictionary = {}):
+	_fetch()
+	
+	get_node("vbox").get_node("name_label").text = "name: " + turret_info.name
+
+	var base_labels = hbox_global.get_node("hbox_labels")
+	var base_values = hbox_global.get_node("hbox_values")
+	for child in base_labels.get_children(): child.queue_free()
+	for child in base_values.get_children(): child.queue_free()
+	
+	var flat = flatten(turret_info)
+	
+	var skip = ["upgrades"]
+	for k in flat:
+		if k in skip or "name" in k: continue
+		
+		var val = str(flat[k])
+		var label_lab = Label.new() 
+		label_lab.text = k
+		base_labels.add_child(label_lab)
+		var label_val = Label.new() 
+		label_val.text = val
+		base_values.add_child(label_val)
 
 func _process(delta):
 	_fetch()
 	
 	var info = null;
+	var comp = {};
 	
 	var hovering = null
 	if gui.control.state == Globals.PlayerState.PICK and \
@@ -84,6 +94,6 @@ func _process(delta):
 		info = gui.player.placer.colliding_node.info
 		
 	if info != null: 
-		refresh(info)
+		refresh(info, comp)
 		self.visible = true
 	else: self.visible = false
