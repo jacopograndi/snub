@@ -1,7 +1,7 @@
 extends Node
 
 var mapname = "map0.json"
-var mappath = "user://"
+var mappath = "./assets/maps/"
 
 var _world : VoxelMesh = null
 var _path_holder : Node = null
@@ -28,6 +28,14 @@ func fetch ():
 func get_map_state ():
 	fetch()
 	var state = {}
+	
+	state["voxels-palette"] = []
+	for id in _world.voxel_set.get_ids():
+		var col : Color = _world.voxel_set.get_voxel(id).color
+		var pal = {
+			"color": [ col.r, col.g, col.b, col.a ], 
+			"id": id }
+		state["voxels-palette"] += [pal]
 	
 	state["voxels"] = []
 	for pos in _world.get_voxels():
@@ -60,7 +68,14 @@ func get_map_state ():
 	
 func set_map_state (state):
 	fetch()
+	
 	_world.erase_voxels()
+	
+	_world.voxel_set.erase_voxels()
+	for vox in state["voxels-palette"]:
+		var col = Color(vox.color[0], vox.color[1], vox.color[2], vox.color[3])
+		_world.voxel_set.add_voxel({ "color": col })
+	
 	for vox in state["voxels"]:
 		var vecpos = Vector3(vox.pos[0], vox.pos[1], vox.pos[2]);
 		_world.set_voxel(vecpos, vox.id)

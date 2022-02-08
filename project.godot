@@ -80,6 +80,11 @@ Globals="*res://scripts/globals.gd"
 
 enabled=PoolStringArray( "res://addons/voxel-core/plugin.cfg" )
 
+[global]
+
+env=false
+default=false
+
 [gui]
 
 theme/use_hidpi=true
@@ -185,3 +190,4 @@ quality/shadows/filter_mode=2
 quality/subsurface_scattering/quality=2
 quality/filters/msaa=4
 quality/filters/use_fxaa=true
+environment/default_environment="res://default_env.tres"

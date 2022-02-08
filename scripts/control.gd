@@ -59,11 +59,12 @@ func build_option (st, sttype):
 					opts += [ { "type": "text", "name": "path" } ]
 					opts += [ { "type": "text", "name": "end path" } ]
 				Globals.StateType.VOXEL:
-					for i in world.voxel_set.size():
+					for i in world.voxel_set.get_ids():
 						var details = world.voxel_set.get_voxel(i)
 						var color = Color(1, 0, 1)
 						if details.has("color"): color = details.color
 						opts += [ { "type": "color", "name": str(i), "color": color} ]
+					opts += [ { "type": "text", "name": "add" } ]
 						
 		Globals.PlayerState.EDIT:
 			match sttype:
@@ -155,8 +156,19 @@ func do (action, par = {}):
 		Globals.PlayerState.PICK:
 			match action:
 				Globals.PlayerActions.PICK:
-					selected = par.name
-					state = Globals.PlayerState.PLACE
+					match statetype:
+						Globals.StateType.VOXEL:
+							match par.name:
+								"add": 
+									selected = "add"
+									gui.edit_palette.popup()
+									build_option(state, statetype)
+								_:
+									selected = par.name
+									state = Globals.PlayerState.PLACE
+						_:
+							selected = par.name
+							state = Globals.PlayerState.PLACE
 					
 				Globals.PlayerActions.SELECT:
 					match statetype:
@@ -173,6 +185,21 @@ func do (action, par = {}):
 					state = Globals.PlayerState.PICK
 					statetype = par.statetype
 					build_option(state, statetype)
+					
+				Globals.PlayerActions.EDIT:
+					match statetype:
+						Globals.StateType.VOXEL:
+							match par.name:
+								"add": 
+									selected = "add"
+									gui.edit_palette.popup()
+									build_option(state, statetype)
+								_:
+									selected = par.name
+									var dict = world.voxel_set.get_voxel(int(par.name))
+									gui.edit_palette.get_node("ColorPicker").color = dict.color
+									gui.edit_palette.popup()
+									build_option(state, statetype)
 					
 		Globals.PlayerState.PLACE:
 			match action:
@@ -204,6 +231,21 @@ func do (action, par = {}):
 					state = Globals.PlayerState.PICK
 					statetype = par.statetype
 					build_option(state, statetype)
+					
+				Globals.PlayerActions.EDIT:
+					match statetype:
+						Globals.StateType.VOXEL:
+							match par.name:
+								"add": 
+									selected = "add"
+									gui.edit_palette.popup()
+									build_option(state, statetype)
+								_:
+									selected = par.name
+									var dict = world.voxel_set.get_voxel(int(par.name))
+									gui.edit_palette.get_node("ColorPicker").color = dict.color
+									gui.edit_palette.popup()
+									build_option(state, statetype)
 					
 		Globals.PlayerState.EDIT:
 			match action:
@@ -314,4 +356,15 @@ func gui_change_map_event (mapname : String):
 	gui.load_map.visible = false
 	
 	path.refresh_path(ineditor)
+	gui.refresh()
+	
+func gui_picked_color (color : Color):
+	if selected != "add":
+		var dict = world.voxel_set.get_voxel(int(selected))
+		dict.color = color
+		world.voxel_set.set_voxel(int(selected), dict)
+	else:
+		world.voxel_set.add_voxel({"color":color})
+	world.update_mesh()
+	build_option(state, statetype)
 	gui.refresh()

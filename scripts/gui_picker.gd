@@ -40,7 +40,7 @@ func build (options : Array = []):
 	for child in _hbox.get_children():
 		child.disconnect("mouse_entered", self, "_on_gui_turret_mouse_entered")
 		child.disconnect("mouse_exited", self, "_on_gui_turret_mouse_exited")
-		child.disconnect("pressed", self, "_on_gui_turret_pressed")
+		child.disconnect("gui_input", self, "_on_gui_turret_input")
 		child.queue_free()
 	
 	_options = options
@@ -77,7 +77,7 @@ func build (options : Array = []):
 	for child in _hbox.get_children():
 		child.connect("mouse_entered", self, "_on_gui_turret_mouse_entered", [child.option])
 		child.connect("mouse_exited", self, "_on_gui_turret_mouse_exited", [child.option])
-		child.connect("pressed", self, "_on_gui_turret_pressed", [child.option])
+		child.connect("gui_input", self, "_on_gui_turret_input", [child.option])
 
 func refresh ():
 	_fetch()
@@ -89,4 +89,14 @@ func _on_gui_turret_mouse_exited(option : Dictionary):
 	hovering = ""
 	
 func _on_gui_turret_pressed(option : Dictionary):
-	gui.control.do(Globals.PlayerActions.PICK, option)
+	#gui.control.do(Globals.PlayerActions.PICK, option)
+	pass
+	
+func _on_gui_turret_input(event, option : Dictionary):
+	if event is InputEventMouseButton and event.pressed:
+		match event.button_index:
+			BUTTON_LEFT:
+				gui.control.do(Globals.PlayerActions.PICK, option)
+			BUTTON_RIGHT:
+				gui.control.do(Globals.PlayerActions.EDIT, option)
+

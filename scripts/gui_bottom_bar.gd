@@ -42,10 +42,6 @@ func _on_voxel_button_up():
 	gui.control.do(Globals.PlayerActions.CHANGE_TYPE, 
 		{ "statetype": Globals.StateType.VOXEL })
 
-func _on_palette_button_up():
-	gui.control.do(Globals.PlayerActions.CHANGE_TYPE, 
-		{ "statetype": Globals.StateType.VOXEL_PALETTE })
-
 func _on_save_button_up():
 	gui.control.gui_save_map_event()
 

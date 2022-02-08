@@ -10,6 +10,7 @@ var wave_ongoing : Panel
 var load_map : PanelContainer
 var save_as : AcceptDialog
 var delete_confirm : AcceptDialog
+var edit_palette : AcceptDialog
 var saveload : Node
 var saveload_map : Node
 
@@ -30,6 +31,8 @@ func _fetch ():
 		save_as.register_text_enter(save_as.get_node("line_edit"))
 	if delete_confirm == null: 
 		delete_confirm = $delete_confirm
+	if edit_palette == null: 
+		edit_palette = $edit_palette
 
 func _ready():
 	_fetch()
@@ -59,3 +62,6 @@ func _on_delete_confirmed():
 
 func _on_close_load_map():
 	load_map.visible = false
+
+func _on_edit_palette_confirmed():
+	control.gui_picked_color(edit_palette.get_node("ColorPicker").color)

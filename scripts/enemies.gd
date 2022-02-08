@@ -45,13 +45,14 @@ func _ready():
 	load_shapes = saveload.get_node("load_shapes")
 	if !load_shapes.loaded: yield(load_shapes, "done_loading")
 
-func spawn(name, node_cur=0, rel_pos=0):
+func spawn(name, node_cur=0, rel_pos=0, hp=0):
 	print("spawned " + name)
 	var instance = _enemy_blue.instance()
 	add_child(instance)
 	instance.transform.origin = _path.nodes[0].transform.origin;
 	instance.name = str(serial_enemy)
 	var info = load_shapes.info[name]
+	if hp == 0: hp = info.lives
 	
 	var instance_model = load_shapes.models[info.model_name].instance()
 	instance.add_child(instance_model)
@@ -60,7 +61,7 @@ func spawn(name, node_cur=0, rel_pos=0):
 	var axis : Vector3 = Quat(Vector3(0, randf()*TAU, 0)) * Vector3.RIGHT 
 	enemies[serial_enemy] = { 
 		"name": name, 
-		"hp": info.lives, 
+		"hp": hp, 
 		"slow_effect": 0, 
 		"slow_time": 0, 
 		"cur": node_cur, 

@@ -20,5 +20,5 @@ func _on_timer_batch_timeout():
 		queue_free()
 		return
 		
-	enemy_holder.spawn(n.enemy)
+	enemy_holder.spawn(n.enemy, 0, 0, n.hp)
 	start(n.cooldown)

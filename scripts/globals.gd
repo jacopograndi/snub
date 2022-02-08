@@ -11,7 +11,6 @@ enum StateType {
 	ATTACH, 
 	PATH,
 	VOXEL,
-	VOXEL_PALETTE
 	TARGETING
 	MODULES
 	MODULES_PICK
@@ -23,5 +22,6 @@ enum PlayerActions {
 	PLACE,
 	SELECT, 
 	DELETE, 
-	CANCEL
+	CANCEL,
+	EDIT
 }
