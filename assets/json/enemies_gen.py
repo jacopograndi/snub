@@ -54,6 +54,14 @@ bonus = {
     "s": { "speed": 0.8, "lives": 3 },
 }
 
+colors = {
+    "T": [1, 1, 1, 1],
+    "k": [0.2, 0.7, 0, 1],
+    "a": [1, 0, 0, 1],
+    "d": [0, 0.4, 1, 1],
+    "s": [1, 1, 0, 1],
+}
+
 def get_stats (node):
     stats = base.copy()
     bonuses = { k:1 for k in stats }
@@ -66,6 +74,13 @@ def get_stats (node):
         stats[s] *= bonuses[s]
     return stats
 
+def get_color (node):
+    color = [0,0,0,0]
+    for r in node:
+        for i in range(len(color)): color[i] += colors[r][i]
+    for i in range(len(color)): color[i] /= len(node)
+    return color
+
 def get_enemy (node):
     enemy = get_stats(node)
     enemy['name'] = node
@@ -75,6 +90,7 @@ def get_enemy (node):
     enemy["model_name"] = node + '.glb'
     enemy["thumbnail_name"] = node + '.png'
     enemy["resource"] = node[0]
+    enemy["color"] = get_color(node)
     return enemy
 
 

@@ -6,7 +6,7 @@ var a : float = 0
 var d : float = 0
 var s : float = 0
 
-var lives : int = 0
+var lives : int = 100
 
 func get_names(): return "Tkads"
 

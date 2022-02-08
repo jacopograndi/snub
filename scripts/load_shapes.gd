@@ -40,6 +40,11 @@ func load_info():
 		var parsed = saveload.load_parse_json("res://assets/json/" + f)
 		if parsed != null:
 			for tin in parsed:
+				tin.color = Color(
+					tin.color[0], 
+					tin.color[1], 
+					tin.color[2], 
+					tin.color[3])
 				info[tin.name] = tin
 
 

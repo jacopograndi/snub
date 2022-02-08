@@ -66,10 +66,19 @@ func spawn(name, node_cur=0, rel_pos=0, hp=0):
 		"slow_time": 0, 
 		"cur": node_cur, 
 		"rel": rel_pos, 
-		"axis": [axis.x, axis.y, axis.z] 
+		"axis": [axis.x, axis.y, axis.z],
+		"basecolor": Color(info.color[0], info.color[1], info.color[2], info.color[3]),
+		"color": Color(info.color[0], info.color[1], info.color[2], info.color[3])
 	}
+	var next_color = Color.black;
+	if info.has("spawn_on_death"): 
+		next_color = load_shapes.info[info.spawn_on_death].color
+	enemies[serial_enemy].color = info.color.linear_interpolate(
+		next_color, enemies[serial_enemy].hp/info.lives)
 	instance.transform.origin = abs_pos(serial_enemy)
 	serial_enemy += 1
+	
+
 	
 func node_from_id (id):
 	return get_node(str(id))
@@ -92,7 +101,7 @@ func _physics_process(delta):
 			enemy.rel = 0
 			for n in range(info.get("spawn_num", 0)):
 				# todo rel +- epslion
-				spawn(info.spawn_on_death, enemy.cur, enemy.rel - n/10)
+				spawn(info.spawn_on_death, enemy.cur, enemy.rel - n/10.0)
 			continue
 		
 		enemy.slow_time -= delta
@@ -117,7 +126,7 @@ func _physics_process(delta):
 		child.transform.basis = child.transform.basis.rotated(axis, delta)
 		
 		var mesh : MeshInstance = child.get_child(1).get_child(0)
-		mesh.get_active_material(0).albedo_color = colors[0]
+		mesh.get_active_material(0).albedo_color = enemy.color
 	
 	for id in delist:
 		get_node(str(id)).queue_free()
@@ -137,6 +146,10 @@ func damage(name, dam, slow_effect=0, slow_time=0):
 			enemy.hp -= dam
 			_resources.add({ info.resource: dam })
 			fx_damage(name)
+			var next_color = Color.black;
+			if info.has("spawn_on_death"): 
+				next_color = load_shapes.info[info.spawn_on_death].color
+			enemy.color = info.color.linear_interpolate(next_color, enemy.hp/info.lives)
 		if slow_effect > 0:
 			enemy.slow_effect = max(slow_effect, enemy.slow_effect)
 			enemy.slow_time = slow_time
@@ -156,4 +169,4 @@ func fx_damage(name):
 	var instance_model = load_shapes.models[info.model_name].instance()
 	instance.add_child(instance_model)
 	
-	instance.refresh_shader(_dissolve_mat.duplicate(), colors[0])
+	instance.refresh_shader(_dissolve_mat.duplicate(), enemy.color)
